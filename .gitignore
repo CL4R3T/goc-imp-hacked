@@ -1,0 +1,30 @@
+# Installed dependencies and package-manager caches
+node_modules/
+.npm/
+.pnpm-store/
+
+# Reproducible analysis outputs, test reports, screenshots and predictions
+/artifacts/
+/coverage/
+/playwright-report/
+/test-results/
+
+# Local inputs may contain a player's event data or save snapshots
+/local/
+.env
+.env.*
+!.env.example
+
+# Logs and temporary/editor/OS files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+
+# dist/*.user.js is intentionally tracked so the userscript can be installed directly.
+# src/generated/ and samples/upstream/ are intentionally tracked for reproducibility.

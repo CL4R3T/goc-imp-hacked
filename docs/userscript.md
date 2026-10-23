@@ -1,0 +1,47 @@
+# Impossible 预测面板 v1.2.1
+
+安装文件：[dist/goc-impossible-predictor.user.js](../dist/goc-impossible-predictor.user.js)。自包含，无外部依赖。
+
+## 安装 / 更新
+
+在油猴中新建脚本（更新时打开旧脚本），用 `.user.js` 文件的全部内容替换编辑器内容，保存并刷新游戏。
+
+先在游戏里打开 Impossible 事件，再点击右下角的 **Imp 预测**。面板直接读取该事件；右上角 `×` 关闭，下次展开会重新跟随当前事件。
+
+## 面板只显示这些结果
+
+- 事件第几轮失败、自然最终等级。
+- 来源币种，以及不关闭任何扇区时的转盘结果。
+- 每个小游戏能达到的最高 Mega，以及从当前进度再玩几轮、何时停止或等失败结算。
+- 每个小游戏是否能拿新卡；若能，给出最早可拿新卡的结算时机。
+- 选择目标转盘币种后，给出要关闭的最少币种组合及代币数。
+
+“最多 Mega”和“拿新卡”是两个目标，各列分别给出操作，不要求它们发生在同一停止点。正反面或红黑任选，不影响这份构建的胜负和数值收益。
+
+失败轮次从本事件第一轮算起；操作中的“再玩 N 轮”从当前进度算起。已经开始的事件只显示实际选定的小游戏；尚未开始时比较四种游戏，未解锁的游戏会标明。
+
+转盘组合遍历全部可用扇区子集，保证关闭数最少；存在多个同样少的组合时显示其中一个。代币数可能超过当前余额，面板显示的“当前”是现有余额；随后抽到重复卡获得的代币可增加余额。
+
+这些都是提示。需要在游戏里手动游玩、停止、关闭扇区和领奖；面板不会执行游戏操作或改写存档。
+
+## 备用工具
+
+“工具”默认折叠，包含其他事件选择、只读 IndexedDB 存档读取、手动 JSON 和诊断信息。实时读取失败时可以使用备用存档，但快照可能滞后。
+
+脚本匹配 `gameofchance.xyz`（及其子域名）和 `gameofchance.pages.dev`；其他域名需补充 `@match`。使用 `@grant none` / `@sandbox raw` 在页面上下文读取 React 状态，说明见 [Tampermonkey grant](https://www.tampermonkey.net/documentation.php?q=grant) 和 [sandbox](https://www.tampermonkey.net/documentation.php?q=sandbox)。
+
+规则对应 `index-kVDE62Ka.js`。主包不同则默认停止预测并提示核对；没有读取到收藏时，新卡结果显示未知，不会假设空收藏。
+
+## 验证
+
+[面板预览](assets/panel-preview.png)使用本地构造事件，不是实际存档。浏览器测试将最新预览与报告分别输出到 `artifacts/screenshots/panel-preview.png` 和 `artifacts/reports/browser.json`；尚未在用户真实游戏页面实测。
+
+算法测试另独立枚举了 33,888 个删除子集，核对 336 个目标币种方案，确认所给组合能命中目标且关闭数最少。
+
+项目根目录运行：
+
+```powershell
+npm run build
+npm test
+npm run test:browser
+```

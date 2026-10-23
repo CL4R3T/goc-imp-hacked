@@ -1,0 +1,10 @@
+{
+  "seed": 281474978986060,
+  "startLevel": 5,
+  "source": "coin",
+  "heldCards": {},
+  "availableSources": ["coin", "dice", "card", "d20", "roulette", "lottery", "dart", "rocket", "element", "animal", "plant"],
+  "removedSources": [],
+  "wheelUnlocked": true,
+  "spinCurrency": 0
+}

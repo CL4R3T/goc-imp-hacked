@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Preserve exact upstream bytes so manifest SHA-256 values survive checkout.
+samples/upstream/*.js -text
+*.png binary

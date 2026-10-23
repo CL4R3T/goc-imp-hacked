@@ -1,0 +1,17 @@
+{
+  "name": "goc-impossible-predictor",
+  "version": "1.2.1",
+  "private": true,
+  "description": "Offline Game of Chance Impossible predictor and Tampermonkey panel",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build-userscript.cjs",
+    "extract": "node scripts/extract-rules.cjs",
+    "format:samples": "node scripts/format-samples.cjs",
+    "predict": "node src/core/predict-event.cjs",
+    "test": "node tests/unit/rules.test.cjs && node tests/unit/summary.test.cjs && node tests/integration/prediction.test.cjs",
+    "test:browser": "node tests/integration/userscript.test.cjs",
+    "check": "npm run build && npm test && npm run test:browser"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}
