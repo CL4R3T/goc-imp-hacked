@@ -1,25 +1,12 @@
 # Game of Chance：Impossible 模块代码解析
 
-分析对象：`ImpossiblePage-7YXHmM7h.js` 和同一构建的 `index-kVDE62Ka.js`。以下结论来自本地代码；没有运行整个游戏、访问存档或修改原始文件。文中的概率推导会单独标明。
+本文说明 Impossible 的状态流转、小游戏、奖励和随机数规则。结论适用于预测脚本支持的游戏版本；概率推导会单独标明。
 
-## 1. 文件结构与可读产物
+## 1. 功能结构
 
-这两份文件主要经过了构建工具的压缩、变量改名和代码分包，并非字符串加密式混淆。页面是 React 组件；核心规则和状态更新在 index 中。
+Impossible 页面使用 React 展示事件、小游戏和奖励；状态操作负责推进事件，规则函数负责计算等级、Mega、卡牌及转盘结果。
 
-| 文件 | 用途 |
-| --- | --- |
-| `artifacts/formatted/ImpossiblePage.formatted.js` | 格式化后的页面源码，保留原有短变量名 |
-| `artifacts/formatted/index.formatted.js` | 格式化后的主包，保留原有短变量名 |
-| `src/generated/impossible-rules.cjs` | 从主包自动提取 176 个相互依赖的声明，将 70 个关键入口重命名，可直接由 Node 加载 |
-| `src/generated/symbol-map.json` | 主包原符号与语义名称对照 |
-| `artifacts/data/cards.csv` | 全部 198 张卡牌及属性，可按卡牌 ID 检索 |
-| `artifacts/reports/rules.json` | 数值表、老虎机穷举结果和验证摘要 |
-| `scripts/extract-rules.cjs`、`scripts/lib/rename-plugin.cjs` | 规则提取脚本；依赖 Playwright 所附 Babel，可通过 `CODEX_BABEL_BUNDLE` 指定路径 |
-| `tests/unit/rules.test.cjs` | 对提取出的实际规则执行验证，运行方式：`npm test` |
-
-原始样本保存在 `samples/upstream/`。本表路径相对于仓库根目录；格式化副本和报告属于可重新生成的本地产物。
-
-可读规则文件保留实际算法；并非根据玩法另外仿写。只执行提取的规则声明，不执行浏览器主包启动逻辑。原始文件保持原样。
+[独立油猴脚本](../dist/goc-impossible-predictor.user.js)包含预测所需的规则，通过只读状态快照重放事件。下文用语义名称和游戏内部符号说明各功能的对应关系。
 
 ## 2. 整体状态与调用关系
 
@@ -64,7 +51,7 @@ chain = {
 | `spinImpossibleCurrency` | `xB` | 检查转盘条件、扣代币、确定货币种类 |
 | `claimImpossibleChain` | `kB` | 发放 Mega、写统计、清除当前事件 |
 
-源码位置：`index.formatted.js:64110` 起。Waiting/Trophy 判定及统计见 `:46831` 附近；统计只把已经 `claimed` 的 chain 算作已完成。因此“恰好某级结算”的解锁会在该事件领取后供下一事件使用。
+Waiting/Trophy 判定及统计只把已经 `claimed` 的 chain 算作已完成。因此“恰好某级结算”的解锁会在该事件领取后供下一事件使用。
 
 ## 3. 初始等级：你的公式基本正确，需注意单位和取整
 
@@ -86,7 +73,7 @@ L_0=\max\left(0,\left\lfloor\log_2\frac{7.15112384\times10^{-8}}p\right\rfloor\r
 
 每比门槛再稀有 2 倍，多一个初始等级。门槛是 6/49 彩票头奖概率的数值近似；代码保留的十进制常量与精确 `1/13983816` 略有舍入差异，极端边界处应以代码为准。
 
-对应可读规则：`startingLevel`，主包 `bP`，`index.formatted.js:46634`。
+对应规则名称：`startingLevel`，主包原始符号为 `bP`。
 
 ## 4. Mega 的实际计算：基础值 + 累积修正
 
@@ -289,8 +276,8 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 ## 10. 验证与结论边界
 
-执行了 12,429 组检查，包括 12,000 对相反猜测的同 seed/同步数对照、等级/Mega 数值、Plinko 对称和奇偶路径、Deal 多数颜色、Slots 预定胜负、修正限幅、198 张卡、52% 上限、重复卡不叠速度、Shiny 池回退和精确等级解锁。另穷举全部 19,683 个 Slots 基础盘面计算概率。
+开发分析阶段执行了 12,429 组检查，包括 12,000 对相反猜测的同 seed/同步数对照、等级/Mega 数值、Plinko 对称和奇偶路径、Deal 多数颜色、Slots 预定胜负、修正限幅、198 张卡、52% 上限、重复卡不叠速度、Shiny 池回退和精确等级解锁。另穷举全部 19,683 个 Slots 基础盘面计算概率。
 
-这些验证针对从所给 bundle 提取出的规则，并结合页面与状态操作的静态阅读；未做完整浏览器交互、存档持久化或服务器行为测试。现有两份文件已足以还原上述主要玩法，无需 React、地图、公式渲染等 vendor 文件。
+这些验证覆盖规则计算，并结合页面与状态操作的静态分析；未做完整浏览器交互、存档持久化或服务器行为测试。
 
 与最初游玩描述相比，关键补充是：等级向下取整、概率按百分数存储；可以主动停级；失败保留基础奖励；Slots 的旧奖池变化与升级增量分开；胜负先于小游戏表现生成；最终等级需精确匹配解锁；高等级卡池会因收藏情况回退；币种转盘可选且不改 Mega 数量。

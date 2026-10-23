@@ -3,7 +3,7 @@ node_modules/
 .npm/
 .pnpm-store/
 
-# Reproducible analysis outputs, test reports, screenshots and predictions
+# Local analysis outputs and reports
 /artifacts/
 /coverage/
 /playwright-report/
@@ -26,5 +26,4 @@ Thumbs.db
 desktop.ini
 .idea/
 
-# dist/*.user.js is intentionally tracked so the userscript can be installed directly.
-# src/generated/ and samples/upstream/ are intentionally tracked for reproducibility.
+# Keep the installable dist/*.user.js file tracked.

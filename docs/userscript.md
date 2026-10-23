@@ -1,4 +1,4 @@
-# Impossible 预测面板 v1.2.1
+# Impossible 预测面板 v1.0.0
 
 安装文件：[dist/goc-impossible-predictor.user.js](../dist/goc-impossible-predictor.user.js)。自包含，无外部依赖。
 
@@ -30,18 +30,12 @@
 
 脚本匹配 `gameofchance.xyz`（及其子域名）和 `gameofchance.pages.dev`；其他域名需补充 `@match`。使用 `@grant none` / `@sandbox raw` 在页面上下文读取 React 状态，说明见 [Tampermonkey grant](https://www.tampermonkey.net/documentation.php?q=grant) 和 [sandbox](https://www.tampermonkey.net/documentation.php?q=sandbox)。
 
-规则对应 `index-kVDE62Ka.js`。主包不同则默认停止预测并提示核对；没有读取到收藏时，新卡结果显示未知，不会假设空收藏。
+游戏版本与内置规则版本不一致时，默认停止预测并提示核对；没有读取到收藏时，新卡结果显示未知，不会假设空收藏。
 
 ## 验证
 
-[面板预览](assets/panel-preview.png)使用本地构造事件，不是实际存档。浏览器测试将最新预览与报告分别输出到 `artifacts/screenshots/panel-preview.png` 和 `artifacts/reports/browser.json`；尚未在用户真实游戏页面实测。
+[面板预览](assets/panel-preview.png)使用本地构造事件，不是实际存档。开发阶段进行了浏览器模拟测试，尚未在用户真实游戏页面实测。
 
 算法测试另独立枚举了 33,888 个删除子集，核对 336 个目标币种方案，确认所给组合能命中目标且关闭数最少。
 
-项目根目录运行：
-
-```powershell
-npm run build
-npm test
-npm run test:browser
-```
+脚本仅包含预测所需的规则和数据字段，已核对 198 张卡牌、1,440 组预测和 756 个重放回合的结果一致性。
