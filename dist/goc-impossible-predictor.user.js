@@ -15,7 +15,7 @@
 (()=>{'use strict';
 const USERSCRIPT_VERSION="1.0.0";
 const RULES=(()=>{const module={exports:{}};
-// Browser subset of src/generated/impossible-rules.cjs; generated during build.
+// Impossible prediction rules.
 "use strict";
 
 const b1 = {
@@ -416,372 +416,21 @@ const applyBonus = (e, t = 0) => {
   };
 };
 const payoutSource = e => e?.payoutSource && WHEEL_SOURCES.includes(e.payoutSource) ? e.payoutSource : e?.source;
-const ORDINARY_CARD_ART = {
-  "coin": [{
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }],
-  "dice": [{
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 4
-  }],
-  "card": [{
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 4
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }],
-  "d20": [{
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 3
-  }, {
-    "percent": 2
-  }],
-  "roulette": [{
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }],
-  "lottery": [{
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 3
-  }, {
-    "percent": 2
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }],
-  "dart": [{
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 5
-  }],
-  "rocket": [{
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }],
-  "element": [{
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 4
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 3
-  }],
-  "animal": [{
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }],
-  "plant": [{
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 1
-  }, {
-    "percent": 3
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 2
-  }, {
-    "percent": 4
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 1
-  }, {
-    "percent": 5
-  }]
+// Per-source percentages, ordered by game (Coin/Deal/Plinko/Slots), then card band.
+const ORDINARY_CARD_PERCENTS = {
+  "coin": [1, 2, 3, 1, 2, 4, 1, 1, 1, 1, 5, 1, 1, 3, 1, 2],
+  "dice": [2, 1, 1, 2, 1, 1, 1, 3, 1, 3, 5, 1, 1, 1, 2, 4],
+  "card": [1, 2, 3, 5, 1, 1, 1, 1, 1, 3, 1, 1, 2, 4, 2, 1],
+  "d20": [1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 1, 5, 2, 3, 3, 2],
+  "roulette": [1, 1, 4, 2, 1, 1, 2, 3, 1, 5, 1, 3, 1, 1, 1, 2],
+  "lottery": [1, 1, 1, 1, 1, 1, 1, 5, 3, 2, 2, 3, 1, 4, 1, 2],
+  "dart": [1, 1, 1, 2, 2, 1, 1, 1, 4, 1, 2, 3, 1, 1, 3, 5],
+  "rocket": [2, 3, 2, 1, 1, 3, 1, 5, 1, 1, 1, 2, 1, 1, 4, 1],
+  "element": [2, 1, 1, 1, 1, 2, 4, 2, 1, 1, 1, 3, 1, 1, 5, 3],
+  "animal": [1, 3, 1, 5, 1, 1, 4, 1, 1, 1, 2, 2, 3, 1, 1, 2],
+  "plant": [1, 1, 2, 3, 1, 2, 1, 3, 1, 1, 2, 4, 1, 1, 1, 5]
 };
-const gs = Object.keys(ORDINARY_CARD_ART);
+const gs = Object.keys(ORDINARY_CARD_PERCENTS);
 const z8 = [0, 2, 3, 5];
 const CARD_DECKS = [{
   game: c6,
@@ -909,7 +558,7 @@ const G7 = (e, t, a) => {
     r = CARD_DECKS[s];
   if (!r || t < 0 || t >= r.bands.length) return 0;
   const i = s * r.bands.length + t;
-  return ORDINARY_CARD_ART[a]?.[i]?.percent ?? 0;
+  return ORDINARY_CARD_PERCENTS[a]?.[i] ?? 0;
 };
 const ordinaryCardBand = (e, t = 0) => {
   const {
@@ -1094,8 +743,7 @@ module.exports = {
 return module.exports;})();
 const PREDICTOR=(()=>{const module={exports:{}};
 // Offline replay of the supplied Game of Chance build. Does not read or modify game saves.
-
-const r = RULES;
+const r=RULES;
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 
 function normalizeSeed(value) {
@@ -1105,7 +753,7 @@ function normalizeSeed(value) {
   throw new Error('seed must be a raw uint32 or a valid encoded event seed.');
 }
 
-// Matches index.formatted.js yB: outcome -> details -> clamped bonus -> next board.
+// Turn order: outcome -> details -> clamped bonus -> next board.
 function replayTurn(chain, call = true) {
   if (chain.settled) throw new Error('The chain has already ended.');
   const step = chain.flips.length;
@@ -1322,7 +970,7 @@ if(window[INSTANCE]?.destroy) window[INSTANCE].destroy();
 let disposed=false,collapsed=true,allowUnknown=false,follow=true,showClaimed=false;
 let wheelTarget=null,selectedId=null,manual=null,snapshot=null,lastSignature='';
 let lastAutoId=null,lastDBRead=0,dbBusy=false,dbSnapshot=null,uiMessage='',drag=null;
-let detectedBuild=null,previewEvent=null,liveWheel=null;
+let detectedBuild=null,previewEvent=null;
 const host=document.createElement('div');
 host.id=HOST_ID;
 host.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2147483646;width:106px;max-width:calc(100vw - 20px);font:13px system-ui,sans-serif;color-scheme:dark;';
@@ -1335,10 +983,10 @@ header{display:flex;align-items:center;gap:8px;padding:10px 13px;background:#1b2
 button,input,select,textarea{font:inherit;color:inherit}button{border:1px solid #414958;background:#252c3a;border-radius:6px;padding:5px 9px;cursor:pointer}button:hover{background:#354156}button:disabled{cursor:default;opacity:.5}input[type=checkbox]{accent-color:#ffc65a}
 .body{max-height:min(78vh,820px);overflow:auto;padding:12px}.status{font-size:11px;color:#9eacbf;margin-bottom:8px}.good{color:#7ce5af}.bad{color:#ff999d}.amber{color:#ffd36d}.muted{color:#96a1b2}.tiny{font-size:11px}.mono{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row label{display:flex;align-items:center;gap:5px}.row select{flex:1;min-width:0}select,textarea{background:#0c1018;border:1px solid #414958;border-radius:6px;padding:6px;width:100%}
-.event{font-weight:650;margin:10px 0 4px;overflow-wrap:anywhere}.box{background:#171d29;border:1px solid #303949;border-radius:9px;padding:10px;margin-top:10px}.title{font-weight:700;margin-bottom:6px}.pill{display:inline-block;border-radius:5px;background:#2a3344;padding:1px 6px;font-size:11px;margin-left:4px}
-.event{margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.outcome{font-size:15px;margin:5px 0}.currencies{margin-bottom:10px}.wheel-summary{border-top:1px solid #303747;padding-top:10px;margin-top:9px}.wheel-summary select{width:auto;flex:1}.game-summary td:first-child{width:20%}.game-summary td:nth-child(2){width:44%}.game-summary td{padding:8px 4px}.game-summary .tiny{line-height:1.55}
-.sequence{font-size:16px;letter-spacing:3px;overflow-wrap:anywhere;margin:7px 0}.sequence .good{color:#7ce5af}.sequence .bad{color:#ff999d}
-table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}th,td{padding:6px 5px;text-align:left;border-bottom:1px solid #303747;vertical-align:top}th{font-size:11px;color:#96a1b2;font-weight:500}.num{text-align:right;white-space:nowrap}tr.best{background:#8bcda00c}details>summary{cursor:pointer;list-style-position:inside;color:#dbe6f6}.card-name{font-weight:600;overflow-wrap:anywhere}.wheel-grid{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.wheel-grid label{border:1px solid #394356;border-radius:6px;padding:4px 6px;font-size:11px}.wheel-grid label.off{color:#96a1b2;text-decoration:line-through}textarea{min-height:100px;resize:vertical;margin-top:7px}.empty{padding:18px 4px;color:#a8b5c8}.toolbar{margin-top:11px;border-top:1px solid #303747;padding-top:9px}.warn{border:1px solid #79603b;color:#ffd36d;background:#30291c;border-radius:7px;padding:8px;margin:8px 0}.error{white-space:pre-wrap;color:#ffb7bb}.break{overflow-wrap:anywhere}.footer{font-size:10px;color:#7e8b9f;margin-top:10px}
+.event{font-weight:650;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.box{background:#171d29;border:1px solid #303949;border-radius:9px;padding:10px;margin-top:10px}
+.outcome{font-size:15px;margin:5px 0}.currencies{margin-bottom:10px}.wheel-summary{border-top:1px solid #303747;padding-top:10px;margin-top:9px}.wheel-summary select{width:auto;flex:1}.game-summary td:first-child{width:20%}.game-summary td:nth-child(2){width:44%}.game-summary td{padding:8px 4px}.game-summary .tiny{line-height:1.55}
+
+table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}th,td{padding:6px 5px;text-align:left;border-bottom:1px solid #303747;vertical-align:top}th{font-size:11px;color:#96a1b2;font-weight:500}details>summary{cursor:pointer;list-style-position:inside;color:#dbe6f6}textarea{min-height:100px;resize:vertical;margin-top:7px}.empty{padding:18px 4px;color:#a8b5c8}.toolbar{margin-top:11px;border-top:1px solid #303747;padding-top:9px}.warn{border:1px solid #79603b;color:#ffd36d;background:#30291c;border-radius:7px;padding:8px;margin:8px 0}.error{white-space:pre-wrap;color:#ffb7bb}.break{overflow-wrap:anywhere}
 </style><button class="launcher" data-action="open" title="打开预测面板，自动读取当前 Impossible 事件">Imp 预测</button><section class="panel" hidden><header><strong>Impossible · 预测</strong><button data-action="refresh" title="刷新读取">↻</button><button data-action="collapse" title="关闭面板">×</button></header><div class="body" hidden><div class="status">正在连接游戏状态…</div></div></section>`;
 document.documentElement.appendChild(host);
 const body=shadow.querySelector('.body');
@@ -1362,7 +1010,7 @@ function findLive(){
   // HostRoot's stateNode.current points to the committed tree, avoiding stale alternates.
   first=first.stateNode?.current||first.current||first;
   const stack=[first],seen=new Set();
-  let value=null,preview=null,wheel=null;
+  let value=null,preview=null;
   while(stack.length && seen.size<50000){
     const fiber=stack.pop();
     if(!fiber||seen.has(fiber))continue;
@@ -1372,14 +1020,11 @@ function findLive(){
     let dep=fiber.dependencies?.firstContext;
     for(let count=0;dep&&count<30;count++,dep=dep.next){if(isContext(dep.memoizedValue))value ||= dep.memoizedValue;}
     if(props?.event?.id && typeof props.onStart==='function' && typeof props.onDismiss==='function')preview=props.event;
-    if(Array.isArray(props?.removed)&&Array.isArray(props?.available)&&typeof props.isSpinning==='boolean'&&typeof props.onToggleRemoved==='function'){
-      wheel={removed:[...props.removed],available:[...props.available]};
-    }
     if(fiber.sibling)stack.push(fiber.sibling);
     if(fiber.child)stack.push(fiber.child);
   }
   if(!value)return null;
-  previewEvent=preview;liveWheel=wheel;
+  previewEvent=preview;
   return {kind:'live',label:'页面实时状态',events:value.impossibleEvents,cards:value.impossibleCards,
     tokens:value.impossibleSpinCurrency,activeId:value.activeImpossibleEvent?.id||null,
     progress:Array.isArray(value.impossibleWheelProgress)?value.impossibleWheelProgress:null};
@@ -1425,7 +1070,7 @@ async function readDatabase(){
     }
     dbSnapshot={kind:'idb',label:'存档快照（可能滞后）',events:imp.events,cards:imp.cards||{},
       tokens:imp.spinCurrency||0,activeId:imp.activeEventId||null,
-      progress:RULES.wheelEligibility(stats,state.unlockedGames||{}),readAt:Date.now()};
+      progress:RULES.wheelEligibility(stats,state.unlockedGames||{})};
     uiMessage='已读取本地存档快照。';
   }catch(error){uiMessage='备用读取：'+error.message;}
   finally{db?.close();dbBusy=false;if(!disposed)refresh(true);}
@@ -1522,7 +1167,7 @@ function refresh(force=false){
   try{state=manual?manualSnapshot(manual):findLive()||dbSnapshot;}catch(e){error=e.message;}
   snapshot=state;
   if(!manual && !state && Date.now()-lastDBRead>8000 && !dbBusy)readDatabase();
-  if(state?.kind!=='live'){previewEvent=null;liveWheel=null;}
+  if(state?.kind!=='live')previewEvent=null;
   const {event,events}=state?chooseEvent(state):{event:null,events:[]};
   const counts=state?finalCounts(state.events):{};
   const config=event?configFor(state,event,counts):null;
@@ -1539,7 +1184,7 @@ function refresh(force=false){
 
 shadow.addEventListener('change',event=>{
   const target=event.target;
-  if(!target.matches('[data-control],[data-wheel]'))return;
+  if(!target.matches('[data-control]'))return;
   if(target.dataset.control==='event'){selectedId=target.value;follow=false;wheelTarget=null;}
   if(target.dataset.control==='follow'){follow=target.checked;lastAutoId=null;}
   if(target.dataset.control==='claimed')showClaimed=target.checked;
@@ -1576,7 +1221,7 @@ shadow.addEventListener('click',event=>{
     const target=shadow.querySelector('[data-diagnostics]');
     target.textContent=JSON.stringify({script:USERSCRIPT_VERSION,build:detectedBuild,expectedBuild:EXPECTED_BUILD,
       source:snapshot?.kind||null,eventCount:snapshot?.events.length||0,hasCards:snapshot?.cards!==undefined,
-      wheelProgressKnown:Array.isArray(snapshot?.progress),liveWheelSeen:!!liveWheel,lastMessage:uiMessage});
+      wheelProgressKnown:Array.isArray(snapshot?.progress),lastMessage:uiMessage});
   }
 });
 const header=shadow.querySelector('header');

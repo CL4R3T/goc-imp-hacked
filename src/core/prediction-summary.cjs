@@ -1,4 +1,4 @@
-const r=require('../generated/impossible-rules.cjs');
+const r=require('../rules/impossible-rules.cjs');
 
 function naturalOutcome(seed,startLevel,maxTurns=4096){
   for(let i=0;i<maxTurns;i++)if(r.outcomeRandom(seed,i)()>=0.5){

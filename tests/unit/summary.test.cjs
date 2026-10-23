@@ -1,14 +1,15 @@
 const assert=require('node:assert/strict');
-const r=require('../../src/generated/impossible-rules.cjs');
+const r=require('../../src/rules/impossible-rules.cjs');
 const p=require('../../src/core/predict-event.cjs');
 const s=require('../../src/core/prediction-summary.cjs');
 const example=require('../../examples/event.json');
+const allCards=require('../helpers/cards.cjs');
 const result=p.predict(example);
 assert.deepEqual(s.naturalOutcome(example.seed,5),{failureRound:7,finalLevel:11});
 assert.deepEqual(result.branches.map(b=>s.summarizeBranch(b).maxMegas),[860,870,857,680]);
 assert.ok(result.branches.every(b=>s.summarizeBranch(b).operation==='再玩 6 轮后结算（Lvl 11）'));
 assert.ok(result.branches.every(b=>s.summarizeBranch(b).newCard.operation==='现在结算（Lvl 5）'));
-const allOwned=Object.fromEntries(r.ALL_CARDS.map(c=>[c.id,1]));
+const allOwned=Object.fromEntries(allCards.map(c=>[c.id,1]));
 assert.ok(p.predict({...example,heldCards:allOwned}).branches.every(b=>s.summarizeBranch(b).newCard.status==='none'));
 const heldInitial=Object.fromEntries(result.branches.map(b=>[b.stopOptions[0].card.id,1]));
 assert.ok(p.predict({...example,heldCards:heldInitial}).branches.every(b=>s.summarizeBranch(b).newCard.level===8));

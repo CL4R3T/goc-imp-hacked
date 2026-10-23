@@ -1,0 +1,55 @@
+{
+  "seed": 281474978986060,
+  "probability": 2.2347262e-7,
+  "source": "coin",
+  "branches": [
+    {
+      "game": "coin",
+      "turns": [
+        {"level":6,"bonus":0,"megas":110,"detail":{"face":true,"bonus":0}},
+        {"level":7,"bonus":0,"megas":170,"detail":{"face":true,"bonus":0}},
+        {"level":8,"bonus":0,"megas":260,"detail":{"face":true,"bonus":0}},
+        {"level":9,"bonus":0,"megas":380,"detail":{"face":true,"bonus":0}},
+        {"level":10,"bonus":0,"megas":580,"detail":{"face":true,"bonus":0}},
+        {"level":11,"bonus":0,"megas":860,"detail":{"face":true,"bonus":0}},
+        {"level":11,"bonus":0,"megas":860,"detail":{"face":false,"bonus":0}}
+      ]
+    },
+    {
+      "game": "deal",
+      "turns": [
+        {"level":6,"bonus":1,"megas":111,"detail":{"face":true,"cards":[{"suit":"hearts","rank":"Q"},{"suit":"clubs","rank":"3"},{"suit":"hearts","rank":"2"},{"suit":"hearts","rank":"7"},{"suit":"diamonds","rank":"4"},{"suit":"spades","rank":"8"},{"suit":"spades","rank":"7"},{"suit":"clubs","rank":"8"},{"suit":"clubs","rank":"7"},{"suit":"hearts","rank":"2"},{"suit":"hearts","rank":"2"},{"suit":"clubs","rank":"5"},{"suit":"diamonds","rank":"10"}],"bonus":1}},
+        {"level":7,"bonus":2,"megas":172,"detail":{"face":true,"cards":[{"suit":"diamonds","rank":"10"},{"suit":"clubs","rank":"9"},{"suit":"diamonds","rank":"5"},{"suit":"diamonds","rank":"4"},{"suit":"clubs","rank":"A"},{"suit":"diamonds","rank":"5"},{"suit":"spades","rank":"3"},{"suit":"spades","rank":"7"},{"suit":"hearts","rank":"Q"},{"suit":"diamonds","rank":"Q"},{"suit":"spades","rank":"9"},{"suit":"spades","rank":"4"},{"suit":"spades","rank":"A"},{"suit":"diamonds","rank":"2"},{"suit":"hearts","rank":"Q"}],"bonus":1}},
+        {"level":8,"bonus":3,"megas":263,"detail":{"face":true,"cards":[{"suit":"diamonds","rank":"A"},{"suit":"spades","rank":"2"},{"suit":"clubs","rank":"K"},{"suit":"hearts","rank":"7"},{"suit":"hearts","rank":"6"},{"suit":"clubs","rank":"7"},{"suit":"clubs","rank":"7"},{"suit":"diamonds","rank":"6"},{"suit":"hearts","rank":"J"},{"suit":"clubs","rank":"4"},{"suit":"clubs","rank":"7"},{"suit":"hearts","rank":"A"},{"suit":"hearts","rank":"7"},{"suit":"clubs","rank":"8"},{"suit":"hearts","rank":"4"},{"suit":"clubs","rank":"J"},{"suit":"diamonds","rank":"4"}],"bonus":1}},
+        {"level":9,"bonus":8,"megas":388,"detail":{"face":true,"cards":[{"suit":"spades","rank":"8"},{"suit":"hearts","rank":"7"},{"suit":"hearts","rank":"5"},{"suit":"diamonds","rank":"K"},{"suit":"hearts","rank":"3"},{"suit":"spades","rank":"J"},{"suit":"clubs","rank":"A"},{"suit":"diamonds","rank":"J"},{"suit":"hearts","rank":"10"},{"suit":"hearts","rank":"8"},{"suit":"hearts","rank":"J"},{"suit":"spades","rank":"A"},{"suit":"clubs","rank":"Q"},{"suit":"diamonds","rank":"10"},{"suit":"diamonds","rank":"A"},{"suit":"diamonds","rank":"Q"},{"suit":"clubs","rank":"5"},{"suit":"diamonds","rank":"2"},{"suit":"clubs","rank":"3"}],"bonus":5}},
+        {"level":10,"bonus":9,"megas":589,"detail":{"face":true,"cards":[{"suit":"diamonds","rank":"2"},{"suit":"diamonds","rank":"7"},{"suit":"hearts","rank":"3"},{"suit":"clubs","rank":"4"},{"suit":"hearts","rank":"Q"},{"suit":"hearts","rank":"5"},{"suit":"spades","rank":"K"},{"suit":"diamonds","rank":"A"},{"suit":"spades","rank":"9"},{"suit":"spades","rank":"3"},{"suit":"hearts","rank":"7"},{"suit":"diamonds","rank":"4"},{"suit":"clubs","rank":"5"},{"suit":"spades","rank":"8"},{"suit":"hearts","rank":"9"},{"suit":"clubs","rank":"Q"},{"suit":"spades","rank":"4"},{"suit":"diamonds","rank":"Q"},{"suit":"clubs","rank":"6"},{"suit":"spades","rank":"7"},{"suit":"hearts","rank":"3"}],"bonus":1}},
+        {"level":11,"bonus":10,"megas":870,"detail":{"face":true,"cards":[{"suit":"clubs","rank":"10"},{"suit":"clubs","rank":"9"},{"suit":"hearts","rank":"2"},{"suit":"hearts","rank":"9"},{"suit":"hearts","rank":"2"},{"suit":"clubs","rank":"8"},{"suit":"hearts","rank":"8"},{"suit":"diamonds","rank":"Q"},{"suit":"hearts","rank":"Q"},{"suit":"spades","rank":"2"},{"suit":"hearts","rank":"5"},{"suit":"diamonds","rank":"3"},{"suit":"hearts","rank":"7"},{"suit":"hearts","rank":"J"},{"suit":"hearts","rank":"3"},{"suit":"spades","rank":"K"},{"suit":"clubs","rank":"8"},{"suit":"clubs","rank":"8"},{"suit":"spades","rank":"6"},{"suit":"spades","rank":"J"},{"suit":"clubs","rank":"K"},{"suit":"spades","rank":"10"},{"suit":"diamonds","rank":"J"}],"bonus":1}},
+        {"level":11,"bonus":9,"megas":869,"detail":{"face":false,"cards":[{"suit":"spades","rank":"2"},{"suit":"clubs","rank":"Q"},{"suit":"clubs","rank":"5"},{"suit":"diamonds","rank":"4"},{"suit":"hearts","rank":"10"},{"suit":"spades","rank":"J"},{"suit":"diamonds","rank":"8"},{"suit":"clubs","rank":"Q"},{"suit":"hearts","rank":"Q"},{"suit":"spades","rank":"J"},{"suit":"diamonds","rank":"4"},{"suit":"hearts","rank":"K"},{"suit":"clubs","rank":"4"},{"suit":"diamonds","rank":"3"},{"suit":"clubs","rank":"2"},{"suit":"hearts","rank":"3"},{"suit":"hearts","rank":"2"},{"suit":"spades","rank":"9"},{"suit":"diamonds","rank":"A"},{"suit":"clubs","rank":"7"},{"suit":"clubs","rank":"Q"},{"suit":"hearts","rank":"4"},{"suit":"diamonds","rank":"Q"},{"suit":"spades","rank":"3"},{"suit":"spades","rank":"A"}],"bonus":-1}}
+      ]
+    },
+    {
+      "game": "plinko",
+      "turns": [
+        {"level":6,"bonus":0,"megas":110,"detail":{"face":true,"path":[true,true,true,true,true,true,false,true,true],"bonus":0}},
+        {"level":7,"bonus":0,"megas":170,"detail":{"face":true,"path":[false,false,true,false,true,true,true,true,true],"bonus":0}},
+        {"level":8,"bonus":-4,"megas":256,"detail":{"face":true,"path":[true,true,true,false,true,false,false,false,true,true,false],"bonus":-4}},
+        {"level":9,"bonus":-8,"megas":372,"detail":{"face":true,"path":[true,true,false,true,false,false,false,false,false,false,true],"bonus":-4}},
+        {"level":10,"bonus":0,"megas":580,"detail":{"face":true,"path":[false,true,true,true,false,true,true,true,true,true,false,true,true],"bonus":8}},
+        {"level":11,"bonus":-3,"megas":857,"detail":{"face":true,"path":[false,false,true,true,true,false,true,true,false,false,false,true,false],"bonus":-3}},
+        {"level":11,"bonus":-3,"megas":857,"detail":{"face":false,"path":[true,true,true,false,false,true,false,false,true,false,true,false,true],"bonus":0}}
+      ]
+    },
+    {
+      "game": "slot",
+      "turns": [
+        {"level":6,"bonus":76,"megas":186,"detail":{"face":true,"grid":["chance","chance","chance","chance","chance","chance","skull","chance","chance"],"bonus":76}},
+        {"level":7,"bonus":76,"megas":246,"detail":{"face":true,"grid":["chance","skull","skull","skull","skull","skull","chance","chance","chance"],"bonus":0}},
+        {"level":8,"bonus":-170,"megas":90,"detail":{"face":true,"grid":["skull","chance","blank","blank","skull","chance","skull","skull","skull"],"bonus":-246}},
+        {"level":9,"bonus":-80,"megas":300,"detail":{"face":true,"grid":["chance","chance","chance","chance","skull","skull","chance","skull","blank"],"bonus":90}},
+        {"level":10,"bonus":-380,"megas":200,"detail":{"face":true,"grid":["skull","skull","skull","blank","chance","skull","blank","chance","blank"],"bonus":-300}},
+        {"level":11,"bonus":-180,"megas":680,"detail":{"face":true,"grid":["chance","chance","chance","blank","blank","skull","chance","chance","chance"],"bonus":200}},
+        {"level":11,"bonus":-180,"megas":680,"detail":{"face":false,"grid":["chance","chance","blank","blank","skull","skull","blank","skull","chance"],"bonus":0}}
+      ]
+    }
+  ]
+}

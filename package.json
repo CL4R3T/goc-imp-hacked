@@ -6,10 +6,8 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "build": "node scripts/build-userscript.cjs",
-    "extract": "node scripts/extract-rules.cjs",
-    "format:samples": "node scripts/format-samples.cjs",
-    "predict": "node src/core/predict-event.cjs",
-    "test": "node tests/unit/rules.test.cjs && node tests/unit/summary.test.cjs && node tests/integration/prediction.test.cjs && node tests/integration/runtime-rules.test.cjs",
+    "predict": "node scripts/predict-event.cjs",
+    "test": "node tests/unit/rules.test.cjs && node tests/unit/summary.test.cjs && node tests/integration/prediction.test.cjs",
     "test:browser": "node tests/integration/userscript.test.cjs",
     "check": "npm run build && npm test && npm run test:browser"
   },

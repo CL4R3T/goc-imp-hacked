@@ -1,51 +1,34 @@
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const vm = require('node:vm');
-const r = require('../../src/generated/impossible-rules.cjs');
+const r = require('../../src/rules/impossible-rules.cjs');
 const predictor = require('../../src/core/predict-event.cjs');
-const {rootPath}=require('../../scripts/lib/paths.cjs');
-const babel = require('../../scripts/lib/runtime.cjs').loadBabel();
-// Replay against the actual unmodified application callback yB, with state updates captured.
-const source = fs.readFileSync(rootPath('samples/upstream/index-kVDE62Ka.js'),'utf8');
-const ast = babel.babelParse(source,'index.js',true);
-let callback;
-babel.traverse(ast,{VariableDeclarator(path){
-  if(path.node.id.name==='yB') {
-    const node=path.node.init.arguments[0];
-    callback=source.slice(node.start,node.end);
-    path.stop();
+const example=require('../../examples/event.json');
+const fixture=require('../fixtures/prediction.json');
+let regressionTurns=0;
+for(const branch of fixture.branches){
+  let chain=r.createChain({source:fixture.source,game:branch.game,seed:fixture.seed,
+    probability:fixture.probability,startedAt:0});
+  for(const expected of branch.turns){
+    const result=predictor.replayTurn(chain,true);
+    assert.equal(result.chain.level,expected.level);
+    assert.equal(result.chain.bonus,expected.bonus);
+    assert.equal(r.totalMegas(result.chain),expected.megas);
+    assert.equal(result.chain.faces.at(-1),expected.detail.face);
+    assert.equal(result.turn.requestedBonus,expected.detail.bonus);
+    for(const key of ['path','cards','grid']){
+      if(expected.detail[key])assert.deepEqual(result.turn.detail[key],expected.detail[key]);
+    }
+    chain=result.chain;regressionTurns++;
   }
-}});
-assert.ok(callback);
-const aliases=JSON.parse(fs.readFileSync(rootPath('src/generated/symbol-map.json'),'utf8'));
-let originalEvent;
-const sandbox={
-  ...Object.fromEntries(Object.entries(aliases).map(([oldName,newName])=>[oldName,r[newName]])),
-  Eo:{current:null},Za:{current:{active:true}},r:{grantImpossible:false},
-  Sx:'plinko',qm:'deal',Wm:'slot',
-  G2:(id,update)=>{originalEvent=update(originalEvent);},
-};
-const originalFlip=vm.runInNewContext('('+callback+')',sandbox);
-function relevant(chain) {
-  const {settledAt,startedAt,...rest}=chain;
-  return JSON.parse(JSON.stringify(rest));
+  assert.equal(chain.settled,true);
 }
 let turns=0;
 for(let seed=0;seed<200;seed++) {
   for(const game of ['coin','deal','plinko','slot']) {
     let predicted=r.createChain({source:'coin',game,seed:r.encodeSeed(seed),
       probability:r.IMPOSSIBLE_THRESHOLD_PERCENT/32,startedAt:0});
-    originalEvent={id:'verification',seed:predicted.seed,seedVersion:1,chain:predicted};
     for(let step=0;step<128&&!predicted.settled;step++) {
       const call=(seed+step)%2===0;
-      sandbox.Eo.current={activeEventId:originalEvent.id,events:[originalEvent]};
-      const originalDetail=originalFlip(call);
       const result=predictor.replayTurn(predicted,call);
-      assert.deepEqual(relevant(result.chain),relevant(originalEvent.chain));
-      assert.equal(result.turn.requestedBonus,originalDetail.bonus);
-      for(const key of ['path','cards','grid']) {
-        if(originalDetail[key]) assert.deepEqual(result.turn.detail[key],originalDetail[key]);
-      }
       const opposite=predictor.replayTurn(predicted,!call);
       assert.equal(opposite.chain.level,result.chain.level);
       assert.equal(r.totalMegas(opposite.chain),r.totalMegas(result.chain));
@@ -55,7 +38,6 @@ for(let seed=0;seed<200;seed++) {
     assert.ok(predicted.settled);
   }
 }
-const example=JSON.parse(fs.readFileSync(rootPath('examples/event.json'),'utf8'));
 const output=predictor.predict(example);
 assert.deepEqual(output.branches.map(b=>b.outcomeSequence),Array(4).fill('WWWWWWL'));
 assert.deepEqual(output.branches.map(b=>b.naturalEnd.megas),[860,869,857,680]);
@@ -79,6 +61,6 @@ const resumed=predictor.predict({event:{id:'resume',source:'coin',probability:in
 assert.equal(resumed.branches.length,1);
 assert.equal(resumed.branches[0].naturalEnd.megas,857);
 assert.equal(resumed.branches[0].outcomeSequence,'WWWWWL');
-console.log(JSON.stringify({originalCallbackMatchedTurns:turns,seedCount:200,games:4,
+console.log(JSON.stringify({regressionTurns,oppositeCallTurns:turns,seedCount:200,games:4,
   oppositeCallsSamePayout:true,exampleNaturalMegas:output.branches.map(b=>b.naturalEnd.megas),
   resumedSnapshotMatched:true},null,2));

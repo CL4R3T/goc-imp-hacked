@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const {loadPlaywright,browserLaunchOptions}=require('../../scripts/lib/runtime.cjs');
-const {rootPath,outputPath}=require('../../scripts/lib/paths.cjs');
+const {loadPlaywright,browserLaunchOptions,rootPath,outputPath}=require('../helpers/browser.cjs');
 const {chromium}=loadPlaywright();
-const r=require('../../src/generated/impossible-rules.cjs');
+const r=require('../../src/rules/impossible-rules.cjs');
+const allCards=require('../helpers/cards.cjs');
 const p=require('../../src/core/predict-event.cjs');
 const userScript=fs.readFileSync(rootPath('dist/goc-impossible-predictor.user.js'),'utf8');
 const example=require('../../examples/event.json');
@@ -85,7 +85,7 @@ async function attach(page,initial){
     await panel.locator('[data-action="open"]').click();
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),true);
-    const fullCollection=Object.fromEntries(r.ALL_CARDS.map(card=>[card.id,1]));
+    const fullCollection=Object.fromEntries(allCards.map(card=>[card.id,1]));
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},{...state,impossibleCards:fullCollection});
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(3)').allTextContents(),['无','无','无','无']);
     const chain=p.replayTurn(r.createChain({source:'coin',game:'deal',seed:example.seed,probability:event.probability})).chain;

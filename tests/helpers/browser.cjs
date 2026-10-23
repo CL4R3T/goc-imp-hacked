@@ -1,7 +1,13 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const os=require('node:os');
-const {ROOT}=require('./paths.cjs');
+const ROOT=path.resolve(__dirname,'../..');
+const rootPath=(...parts)=>path.join(ROOT,...parts);
+function outputPath(...parts){
+  const target=rootPath('artifacts',...parts);
+  fs.mkdirSync(path.dirname(target),{recursive:true});
+  return target;
+}
 
 function playwrightDirectory(){
   if(process.env.PLAYWRIGHT_MODULE_PATH){
@@ -14,9 +20,6 @@ function playwrightDirectory(){
   throw new Error('Playwright is unavailable. Run npm install, or set PLAYWRIGHT_MODULE_PATH.');
 }
 function loadPlaywright(){return require(playwrightDirectory());}
-function loadBabel(){
-  return require(process.env.CODEX_BABEL_BUNDLE||path.join(playwrightDirectory(),'lib','transform','babelBundle.js'));
-}
 function browserLaunchOptions(chromium){
   if(process.env.BROWSER_EXECUTABLE_PATH)return {headless:true,executablePath:process.env.BROWSER_EXECUTABLE_PATH};
   const candidates=[
@@ -29,4 +32,4 @@ function browserLaunchOptions(chromium){
   if(!executablePath)throw new Error('No browser found. Run npx playwright install chromium, or set BROWSER_EXECUTABLE_PATH.');
   return {headless:true,executablePath};
 }
-module.exports={loadPlaywright,loadBabel,browserLaunchOptions};
+module.exports={loadPlaywright,browserLaunchOptions,rootPath,outputPath};

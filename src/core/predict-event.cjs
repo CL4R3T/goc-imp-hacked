@@ -1,6 +1,5 @@
 // Offline replay of the supplied Game of Chance build. Does not read or modify game saves.
-const fs = require('node:fs');
-const r = require('../generated/impossible-rules.cjs');
+const r = require('../rules/impossible-rules.cjs');
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 
 function normalizeSeed(value) {
@@ -10,7 +9,7 @@ function normalizeSeed(value) {
   throw new Error('seed must be a raw uint32 or a valid encoded event seed.');
 }
 
-// Matches index.formatted.js yB: outcome -> details -> clamped bonus -> next board.
+// Turn order: outcome -> details -> clamped bonus -> next board.
 function replayTurn(chain, call = true) {
   if (chain.settled) throw new Error('The chain has already ended.');
   const step = chain.flips.length;
@@ -167,18 +166,3 @@ function predict(config) {
 }
 
 module.exports={normalizeSeed,replayTurn,predict,predictCard,wheelSetup};
-if(require.main===module) {
-  try {
-    const input=process.argv[2];
-    if(!input) throw new Error('Usage: node src/core/predict-event.cjs INPUT.json [OUTPUT.json]');
-    const config=JSON.parse(fs.readFileSync(input,'utf8').replace(/^\uFEFF/,''));
-    const result=predict(config);
-    const text=JSON.stringify(result,null,2)+'\n';
-    if(process.argv[3]) {
-      fs.mkdirSync(require('node:path').dirname(process.argv[3]),{recursive:true});
-      fs.writeFileSync(process.argv[3],text);
-      console.log('Prediction written to '+process.argv[3]);
-    }
-    else process.stdout.write(text);
-  } catch(error) {console.error(error.message);process.exitCode=1;}
-}

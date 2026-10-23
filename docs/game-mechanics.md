@@ -1,4 +1,4 @@
-# Game of Chance：Impossible 模块代码解析
+# Game of Chance：Impossible 机制说明
 
 本文说明 Impossible 的状态流转、小游戏、奖励和随机数规则。结论适用于预测脚本支持的游戏版本；概率推导会单独标明。
 
@@ -6,7 +6,7 @@
 
 Impossible 页面使用 React 展示事件、小游戏和奖励；状态操作负责推进事件，规则函数负责计算等级、Mega、卡牌及转盘结果。
 
-[独立油猴脚本](../dist/goc-impossible-predictor.user.js)包含预测所需的规则，通过只读状态快照重放事件。下文用语义名称和游戏内部符号说明各功能的对应关系。
+[独立油猴脚本](../dist/goc-impossible-predictor.user.js)包含预测所需的规则，通过只读状态快照重放事件。
 
 ## 2. 整体状态与调用关系
 
@@ -40,20 +40,20 @@ chain = {
 
 四种小游戏在开始 chain 时选定；本次 chain 的界面没有途中切换入口。已有 chain 会原样恢复。
 
-页面通过 `kn()` 获取状态和操作。核心动作与主包符号对应如下：
+核心状态操作如下：
 
-| 状态操作 | 主包符号 | 行为 |
-| --- | --- | --- |
-| `startImpossibleChain` | `fB` | 开始或恢复事件 |
-| `flipImpossibleChain` | `yB` | 计算胜负、小游戏结果、bonus，并准备下一局 |
-| `settleImpossibleChain` | `CB` | 玩家主动停止，记录 `settledBy: 'player'` |
-| `openImpossibleReward` | `wB` | 抽卡、更新持有计数、发重复卡代币 |
-| `spinImpossibleCurrency` | `xB` | 检查转盘条件、扣代币、确定货币种类 |
-| `claimImpossibleChain` | `kB` | 发放 Mega、写统计、清除当前事件 |
+| 状态操作 | 行为 |
+| --- | --- |
+| `startImpossibleChain` | 开始或恢复事件 |
+| `flipImpossibleChain` | 计算胜负、小游戏结果、bonus，并准备下一局 |
+| `settleImpossibleChain` | 玩家主动停止，记录 `settledBy: 'player'` |
+| `openImpossibleReward` | 抽卡、更新持有计数、发重复卡代币 |
+| `spinImpossibleCurrency` | 检查转盘条件、扣代币、确定货币种类 |
+| `claimImpossibleChain` | 发放 Mega、写统计、清除当前事件 |
 
 Waiting/Trophy 判定及统计只把已经 `claimed` 的 chain 算作已完成。因此“恰好某级结算”的解锁会在该事件领取后供下一事件使用。
 
-## 3. 初始等级：你的公式基本正确，需注意单位和取整
+## 3. 初始等级：概率单位与取整
 
 代码的 `probability` 使用**百分数数值**。例如百万分之一在此存为 `0.0001`，不是 `0.000001`。
 
@@ -73,7 +73,7 @@ L_0=\max\left(0,\left\lfloor\log_2\frac{7.15112384\times10^{-8}}p\right\rfloor\r
 
 每比门槛再稀有 2 倍，多一个初始等级。门槛是 6/49 彩票头奖概率的数值近似；代码保留的十进制常量与精确 `1/13983816` 略有舍入差异，极端边界处应以代码为准。
 
-对应规则名称：`startingLevel`，主包原始符号为 `bP`。
+对应规则：`startingLevel`。
 
 ## 4. Mega 的实际计算：基础值 + 累积修正
 
@@ -95,7 +95,7 @@ B(L) 并非每级固定增加，而是先算 `10 × 1.5^floor(L)`，然后取整
 
 `applyBonus` 会把单次请求的改变量限制在 `[-floor(当前M), +floor(当前M)]`；这里“当前”指已经执行成功升级或失败判定之后的状态。修正累加至 b，而不是直接修改 B。
 
-对应：`baseMegas`、`totalMegas`、`applyBonus`，原符号 `Lf`、`l6`、`jh`。
+对应规则：`baseMegas`、`totalMegas`、`applyBonus`。
 
 ## 5. 最关键的机制：先确定胜负，再生成符合结果的小游戏画面
 
@@ -128,7 +128,7 @@ else settled = true;
 
 这里的 50/50 是生成器的规则目标和均匀随机模型下的概率；对于已经固定 seed 的事件，结果是确定性的。
 
-对应：`resolveCall`、`outcomeRandom`、`minigameRandom`、`boardRandom`；主包 `Xee`、`yee`、`xee`、`kx`，以及 `yB` 的调用顺序。
+对应规则：`resolveCall`、`outcomeRandom`、`minigameRandom`、`boardRandom`。
 
 ### 5.1 Coin
 
@@ -144,7 +144,7 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 成功时最终变化：`B(L+1)−B(L) + margin`；失败时变化为负 margin，最多扣至 0，然后结束。
 
-对应：`dealHandSize`、`dealForFace`、`redMinusBlack`、`dealBonus`，主包 `GQ`、`qQ`、`UQ`、`YQ`。
+对应规则：`dealHandSize`、`dealForFace`、`redMinusBlack`、`dealBonus`。
 
 ### 5.3 Plinko
 
@@ -158,7 +158,7 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 注意：桶并非等概率。按均匀左右路径模型，k 的概率是二项分布 `C(r,k)/2^r`；固定 face 时只取相应奇偶的桶并归一化。“桶值总和为 0”不代表当前板面期望为 0。例如三行 `[+3,-3,-3,+3]` 的整体期望为 `(3−9−9+3)/8 = −1.5`。板面生成对正负对称，所以对尚未生成的随机板面取平均，修正期望是 0；一块已显示的棋盘可以偏正或偏负。
 
-对应：`plinkoRows`、`createBucketValues`、`plinkoPathForFace`，主包 `vQ`、`TQ`、`PQ`。页面的物理模拟只是沿既定路径播放。
+对应规则：`plinkoRows`、`createBucketValues`、`plinkoPathForFace`。页面的物理模拟只是沿既定路径播放。
 
 ### 5.4 The Slot Machine
 
@@ -181,7 +181,7 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 穷举全部 3^9=19,683 个基础盘面并按权重求和，随后按成功/失败条件归一化，在均匀独立随机模型下、忽略 400 次兜底的极小影响，每转约为：失败 50%；double 21.9707898%；wipe 21.9707898%；成功但不改旧奖池 6.0584204%。这些百分比是数学推导，不是代码中直接写入的四个概率。
 
-对应：`slotGridForWin`、`slotEffect`、`slotBonus`、`SLOT_PAYLINES`，原符号 `see`、`nee`、`ree`、`tee`。
+对应规则：`slotGridForWin`、`slotEffect`、`slotBonus`、`SLOT_PAYLINES`。
 
 ## 6. 解锁条件：要求恰好结算在指定等级
 
@@ -237,7 +237,7 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 重复卡转为 Spin Tokens：普通卡 `ceil(卡牌百分比/2)`，即 1～3 个；一般 Shiny/Unique 为 3 个；Prismatic 为 4 个。重复收集次数仍被记录，但速度计算只判断是否拥有。
 
-对应：`rewardPool`、`drawCardId`、`selectShinyPool`、`duplicateTokens`、`cardSpeedPercent`，主包 `Jse`、`Xse`、`qF`、`WF`、`YF`。
+对应规则：`rewardPool`、`drawCardId`、`selectShinyPool`、`duplicateTokens`。
 
 ## 8. Currency Wheel：只换币种，不换数量
 
@@ -255,29 +255,16 @@ L 级的手牌数：`min(25, 3 + 2L)`，即 3、5、7……25 张，之后保持
 
 ## 9. 页面本身还负责哪些功能
 
-| 页面组件/函数 | 功能 |
-| --- | --- |
-| `Zi` | Impossible Room 总入口、Waiting/Trophy 切换、状态接线 |
-| `Mi` | 事件开始面板、初始等级与 Mega 预览、小游戏选择 |
-| `zi` | 活跃 chain 的游玩和结算界面 |
-| `Il`、`Bs`、`Gn` | Plinko Canvas 动画与绘制；沿已经决定的 path 播放 |
-| `Gl` | Deal 依次翻牌、颜色差额显示 |
-| `Vl` | Slots 卷轴动画、连线高亮、效果提示 |
-| `Hl` | 转盘旋转、扇区过滤、动画与音效 |
-| `Pi` | 等级奖励表与解锁状态 |
-| `Io` | 卡牌收藏面板、速度增益与卡牌详情 |
-| `Li` | 事件统计、连胜与 Mega 汇总 |
-| `Wn`、`Cl` | 房间筛选配置、重复事件显示过滤 |
-| `xi` 等 | 浮动/有序布局、卡片碰撞和位置管理 |
+页面还负责 Waiting/Trophy 切换、事件初始预览、小游戏选择、游玩和结算界面，以及等级奖励表、卡牌收藏和统计。Plinko 动画沿已确定的路径播放；Deal 展示翻牌和颜色差额；Slots 展示卷轴、连线和效果；转盘展示旋转与扇区过滤。
 
 此外还有按来源、起始等级、最终等级、小游戏、成功次数筛选；隐藏重复展示；按稀有度、收益等排序；缩放；声音与 1/1.5/2/3/4 倍动画速度；分别跳过动画；全部候选卡已持有时跳过抽卡转场；转盘计算器的 iframe 通信。
 
-这些显示选项和大部分 `Math.random()` 只影响视觉。真正改变结果的入口位于主包的状态操作及规则随机流。
+这些显示选项和大部分 `Math.random()` 只影响视觉。事件结果由状态操作及规则随机流决定。
 
 ## 10. 验证与结论边界
 
-开发分析阶段执行了 12,429 组检查，包括 12,000 对相反猜测的同 seed/同步数对照、等级/Mega 数值、Plinko 对称和奇偶路径、Deal 多数颜色、Slots 预定胜负、修正限幅、198 张卡、52% 上限、重复卡不叠速度、Shiny 池回退和精确等级解锁。另穷举全部 19,683 个 Slots 基础盘面计算概率。
+规则测试包括 12,000 对相反猜测的同 seed/同步数对照、等级/Mega 数值、Plinko 对称和奇偶路径、Deal 多数颜色、Slots 预定胜负、修正限幅、198 张卡的重复奖励、Shiny 池回退和精确等级解锁。另穷举全部 19,683 个 Slots 基础盘面计算概率。
 
 这些验证覆盖规则计算，并结合页面与状态操作的静态分析；未做完整浏览器交互、存档持久化或服务器行为测试。
 
-与最初游玩描述相比，关键补充是：等级向下取整、概率按百分数存储；可以主动停级；失败保留基础奖励；Slots 的旧奖池变化与升级增量分开；胜负先于小游戏表现生成；最终等级需精确匹配解锁；高等级卡池会因收藏情况回退；币种转盘可选且不改 Mega 数量。
+关键规则包括：等级向下取整、概率按百分数存储；可以主动停级；失败保留基础奖励；Slots 的旧奖池变化与升级增量分开；胜负先于小游戏表现生成；最终等级需精确匹配解锁；高等级卡池会因收藏情况回退；币种转盘可选且不改 Mega 数量。

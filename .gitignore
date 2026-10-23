@@ -1,13 +1,8 @@
-# Installed dependencies and package-manager caches
+# Installed dependencies
 node_modules/
-.npm/
-.pnpm-store/
 
-# Local analysis outputs and reports
+# Local output
 /artifacts/
-/coverage/
-/playwright-report/
-/test-results/
 
 # Local inputs may contain a player's event data or save snapshots
 /local/

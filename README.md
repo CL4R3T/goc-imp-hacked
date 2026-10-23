@@ -9,23 +9,19 @@
 ## 目录结构
 
 ```text
-src/core/              事件预测、结果摘要和最少关闭组合算法
-src/userscript/        页面状态读取及面板界面
-src/generated/         提取出的完整规则和符号映射
-scripts/               构建、规则提取、样本格式化及运行环境适配
-tests/                 单元测试、规则对照测试和浏览器模拟测试
-samples/upstream/      规则提取及对照测试所用的游戏样本
-examples/              CLI 示例输入
-dist/                  可直接安装的独立油猴脚本
-docs/                  使用说明、机制解析、预测原理和面板预览
-artifacts/             本地生成的报告与截图，不纳入版本管理
+src/       预测逻辑、规则和面板源码
+scripts/   构建和 CLI 入口
+tests/     规则、预测及浏览器测试
+examples/  CLI 示例输入
+dist/      可安装的油猴脚本
+docs/      使用说明、机制解析和预览
 ```
 
 安装用的油猴脚本自包含，无外部依赖。开发时修改 `src/`，再运行构建更新 `dist/`。
 
 ## 开发与验证
 
-需要 Node.js 20 或以上版本。安装开发依赖和测试浏览器：
+需要 Node.js 20 或以上版本。构建、CLI 和 `npm test` 只使用 Node.js；运行浏览器测试时安装开发依赖和测试浏览器：
 
 ```sh
 npm install
@@ -34,12 +30,10 @@ npx playwright install chromium
 
 | 命令 | 用途 |
 | --- | --- |
-| `npm run build` | 按实际引用裁剪规则，生成油猴脚本 |
-| `npm test` | 验证规则、摘要、转盘最少关闭组合及完整/裁剪版一致性 |
+| `npm run build` | 合并规则、预测器、摘要和面板，生成油猴脚本 |
+| `npm test` | 验证规则、预测结果、摘要及转盘最少关闭组合 |
 | `npm run test:browser` | 验证面板交互、状态更新和只读行为 |
 | `npm run check` | 构建并运行全部测试 |
-| `npm run extract` | 从游戏样本重新提取完整规则和符号映射 |
-| `npm run format:samples` | 生成便于分析的格式化副本 |
 
 CLI 示例：
 
@@ -47,9 +41,9 @@ CLI 示例：
 npm run predict -- examples/event.json artifacts/prediction-example-result.json
 ```
 
-版本号以 `package.json` 为准。构建按预测器、摘要和界面实际访问的入口递归保留规则依赖，并精简展示无关的数据字段；完整规则用于 CLI 和对照测试。构建报告、测试报告及截图写入 `artifacts/`。
+版本号以 `package.json` 为准。`src/rules/` 直接维护预测所需的精简规则；面板和 CLI 共用同一份规则。构建仅适配模块引用、合并文件并注入版本号。浏览器测试的报告与截图、CLI 指定的输出可放入 `artifacts/`，该目录不纳入版本管理。
 
-工具可通过 `PLAYWRIGHT_MODULE_PATH`、`CODEX_BABEL_BUNDLE` 和 `BROWSER_EXECUTABLE_PATH` 分别指定 Playwright、Babel bundle 和浏览器路径；也会尝试使用本机随附运行库。
+浏览器测试可通过 `PLAYWRIGHT_MODULE_PATH` 和 `BROWSER_EXECUTABLE_PATH` 分别指定 Playwright 和浏览器路径；也会尝试使用本机随附运行库。
 
 ## 文档
 

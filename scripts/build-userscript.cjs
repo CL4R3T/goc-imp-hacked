@@ -1,11 +1,18 @@
 const fs=require('node:fs');
-const {rootPath,outputPath}=require('./lib/paths.cjs');
-const {loadBrowserSources}=require('./lib/browser-sources.cjs');
-const {buildRuntimeRules}=require('./lib/runtime-rules.cjs');
+const path=require('node:path');
+const rootPath=(...parts)=>path.join(__dirname,'..',...parts);
 const {version}=require(rootPath('package.json'));
-const sources=loadBrowserSources();
-const {predictor,summary,ui}=sources;
-const {code:rules,report}=buildRuntimeRules(sources);
+const read=file=>fs.readFileSync(rootPath(file),'utf8');
+function browserModule(file){
+  const source=read(file);
+  const dependency=/const r\s*=\s*require\((['"])\.\.\/rules\/impossible-rules\.cjs\1\);/g;
+  if([...source.matchAll(dependency)].length!==1)throw new Error('Rule import needs review: '+file);
+  return source.replace(dependency,'const r=RULES;');
+}
+const rules=read('src/rules/impossible-rules.cjs');
+const predictor=browserModule('src/core/predict-event.cjs');
+const summary=browserModule('src/core/prediction-summary.cjs');
+const ui=read('src/userscript/ui.js');
 const header=`// ==UserScript==
 // @name         Game of Chance · Impossible 预测面板
 // @namespace    local.goc.impossible-predictor
@@ -25,5 +32,4 @@ const wrap=(name,source)=>`const ${name}=(()=>{const module={exports:{}};\n${sou
 fs.mkdirSync(rootPath('dist'),{recursive:true});
 const script=header+"(()=>{'use strict';\n"+'const USERSCRIPT_VERSION='+JSON.stringify(version)+';\n'+wrap('RULES',rules)+wrap('PREDICTOR',predictor)+wrap('SUMMARY',summary)+ui+'\n})();\n';
 fs.writeFileSync(rootPath('dist/goc-impossible-predictor.user.js'),script);
-fs.writeFileSync(outputPath('reports/bundle.json'),JSON.stringify({...report,version,scriptBytes:Buffer.byteLength(script)},null,2)+'\n');
 console.log('Built dist/goc-impossible-predictor.user.js');
