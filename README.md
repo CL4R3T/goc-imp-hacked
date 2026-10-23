@@ -2,22 +2,24 @@
 
 通过事件 seed 预测 Impossible 结果的油猴面板，当前版本 **v1.0.0**。
 
-**安装脚本：[goc-impossible-predictor.user.js](dist/goc-impossible-predictor.user.js)**。在油猴中新建脚本，粘贴完整文件、保存并刷新游戏。先打开一个 Impossible 事件，再点击右下角的 **Imp 预测**。
+**安装脚本：[下载最新发布版](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)**。下载后在油猴中新建脚本，粘贴完整文件、保存并刷新游戏。先打开一个 Impossible 事件，再点击右下角的 **Imp 预测**。
 
 面板显示失败轮次、最终等级、来源及转盘结果；每个小游戏的最高 Mega 和结算方式、新卡获取方式；目标币种所需关闭的最少扇区组合。只读取和计算，不自动执行游戏操作或修改存档。
 
 ## 目录结构
 
 ```text
+.github/   main 分支自动构建与发布
 src/       预测逻辑、规则和面板源码
 scripts/   构建和 CLI 入口
 tests/     规则、预测及浏览器测试
 examples/  CLI 示例输入
-dist/      可安装的油猴脚本
 docs/      使用说明、机制解析和预览
 ```
 
-安装用的油猴脚本自包含，无外部依赖。开发时修改 `src/`，再运行构建更新 `dist/`。
+安装用的油猴脚本自包含，无外部依赖。本地运行构建后生成到 `dist/`，该目录不纳入版本管理。
+
+`main` 每次推送后，GitHub Actions 自动构建并运行规则、预测测试，通过后发布 Release。某版本首次发布使用 `v版本号` 标签，同版本后续提交使用 SHA 标签。最新下载入口自动更新，也可在 Actions 中选择 `main` 手动运行发布；脚本版本号仍取自 `package.json`。
 
 ## 开发与验证
 

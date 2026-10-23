@@ -2,6 +2,7 @@
 node_modules/
 
 # Local output
+/dist/
 /artifacts/
 
 # Local inputs may contain a player's event data or save snapshots
@@ -20,5 +21,3 @@ node_modules/
 Thumbs.db
 desktop.ini
 .idea/
-
-# Keep the installable dist/*.user.js file tracked.

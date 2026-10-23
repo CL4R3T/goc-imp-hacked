@@ -1,0 +1,66 @@
+name: Build and release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Build and test
+        run: |
+          npm run build
+          node --check dist/goc-impossible-predictor.user.js
+          npm test
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          version_tag="v${version}"
+          version_sha="$(gh api "repos/${GH_REPO}/commits/${version_tag}" --jq .sha 2>/dev/null || true)"
+          if [[ -z "$version_sha" || "$version_sha" == "$GITHUB_SHA" ]]; then
+            tag="$version_tag"
+          else
+            tag="build-${GITHUB_SHA}"
+          fi
+          title="v${version} (${GITHUB_SHA:0:7})"
+          asset="dist/goc-impossible-predictor.user.js"
+          notes="${RUNNER_TEMP}/release-notes.md"
+          printf 'Automated main build.\n\nCommit: [%s](%s/%s/commit/%s)\n' \
+            "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_SHA" > "$notes"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$asset" --clobber
+          else
+            gh release create "$tag" "$asset" --target "$GITHUB_SHA" \
+              --title "$title" --notes-file "$notes" --latest=false
+          fi
+
+          main_sha="$(gh api "repos/${GH_REPO}/commits/main" --jq .sha)"
+          if [[ "$GITHUB_SHA" == "$main_sha" ]]; then
+            gh release edit "$tag" --latest
+          fi

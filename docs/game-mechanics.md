@@ -6,7 +6,7 @@
 
 Impossible 页面使用 React 展示事件、小游戏和奖励；状态操作负责推进事件，规则函数负责计算等级、Mega、卡牌及转盘结果。
 
-[独立油猴脚本](../dist/goc-impossible-predictor.user.js)包含预测所需的规则，通过只读状态快照重放事件。
+[独立油猴脚本](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)包含预测所需的规则，通过只读状态快照重放事件。
 
 ## 2. 整体状态与调用关系
 

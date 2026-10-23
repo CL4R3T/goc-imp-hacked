@@ -1,6 +1,6 @@
 # Impossible 预测面板 v1.0.0
 
-安装文件：[dist/goc-impossible-predictor.user.js](../dist/goc-impossible-predictor.user.js)。自包含，无外部依赖。
+安装文件：[下载最新发布版](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)。自包含，无外部依赖，由 `main` 分支通过构建和测试后自动发布。
 
 ## 安装 / 更新
 
