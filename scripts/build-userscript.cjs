@@ -18,6 +18,7 @@ const header=`// ==UserScript==
 // @namespace    local.goc.impossible-predictor
 // @version      ${version}
 // @description  本地读取 Impossible 状态，预测逐局收益、抽卡及货币转盘；不修改游戏存档。
+// @license MIT
 // @match        https://gameofchance.xyz/*
 // @match        https://*.gameofchance.xyz/*
 // @match        https://gameofchance.pages.dev/*
