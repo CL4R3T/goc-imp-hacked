@@ -1,6 +1,6 @@
 {
   "name": "goc-impossible-predictor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Offline Game of Chance Impossible predictor and Tampermonkey panel",
   "engines": { "node": ">=20" },
