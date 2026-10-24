@@ -145,9 +145,9 @@ function newCardHtml(card,complete){
     const cards=card.cards.map(item=>{
       const source=item.targetSource||item.source;
       const target=source==='global'?'全模式':SOURCE_NAMES[source]||source;
-      return '<div class="new-card" data-card="'+esc(item.id)+'"><strong>'+esc(item.name)+'</strong><div class="tiny good">'+esc(target)+' 加速 +'+esc(item.percent)+'%</div><div class="tiny">最高 <strong class="amber mono">'+number(item.maxMegas)+'</strong> Mega</div><div class="tiny muted">'+esc(item.operation)+'</div></div>';
+      return '<div class="new-card" data-card="'+esc(item.id)+'"><div class="tiny good">'+esc(target)+' 加速 +'+esc(item.percent)+'%</div><div class="tiny">最高 <strong class="amber mono">'+number(item.maxMegas)+'</strong> Mega</div><div class="tiny muted">'+esc(item.operation)+'</div></div>';
     }).join('');
-    return '<span class="good">'+(card.status==='already_new'?'已获新卡':'有 · 新卡最多 '+number(card.maxMegas)+' Mega')+'</span>'+(!complete?'<div class="tiny amber">（仅模拟范围内）</div>':'')+cards;
+    return (card.status==='already_new'?'<span class="good">已获新卡</span>':'')+(!complete?'<div class="tiny amber">（仅模拟范围内）</div>':'')+cards;
   }
   if(card.status==='already_duplicate')return '<span class="muted">已获重复卡</span>';
   if(card.status==='none')return '<span class="muted">无</span>';

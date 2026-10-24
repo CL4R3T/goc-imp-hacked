@@ -59,14 +59,14 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),4);
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(2) > strong').allTextContents(),['860','870','857','680']);
     assert.ok((await panel.locator('[data-game] td:nth-child(2)').allTextContents()).every(t=>t.includes('再玩 6 轮后结算')));
-    assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('有')&&t.includes('再玩 2 轮后结算')));
+    assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('再玩 2 轮后结算')));
     const coinCards=panel.locator('[data-game="coin"] .new-card');
     assert.equal(await coinCards.count(),3);
-    assert.deepEqual(await coinCards.locator(':scope > strong').allTextContents(),['Coin IV','Cryolume','Stackjelly']);
+    assert.deepEqual(await coinCards.evaluateAll(cards=>cards.map(card=>card.dataset.card)),['coin:3:dart','unique:2:global','unique:5:global']);
     assert.match(await coinCards.nth(0).innerText(),/Darts 加速 \+2%.*最高 170 Mega.*再玩 2 轮后结算/s);
     assert.match(await coinCards.nth(1).innerText(),/全模式 加速 \+1%.*最高 260 Mega.*再玩 3 轮后结算/s);
     assert.match(await coinCards.nth(2).innerText(),/全模式 加速 \+1%.*最高 860 Mega.*再玩 6 轮后结算/s);
-    assert.doesNotMatch(await text(),/seed /);
+    assert.doesNotMatch(await text(),/seed |Coin IV|Cryolume|Stackjelly|有 · 新卡最多/);
     assert.equal(await panel.locator('[data-branch]').count(),0);
     await panel.locator('[data-control="wheel-target"]').selectOption('dart');
     assert.match(await panel.locator('.wheel-plan').innerText(),/Coins、Dice/);
@@ -93,12 +93,12 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),true);
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
       {...state,impossibleCards:{'unique:5:global':1}});
-    assert.match(await panel.locator('[data-game="slot"] td:nth-child(3)').innerText(),/新卡最多 246 Mega/);
+    assert.match(await panel.locator('[data-game="slot"] .new-card').nth(0).innerText(),/Darts 加速 \+5%.*最高 246 Mega/s);
     assert.equal(await panel.locator('[data-game="slot"] .new-card').count(),2);
     const shinyEvent={...event,seed:r.encodeSeed(37),probability:r.IMPOSSIBLE_THRESHOLD_PERCENT};
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
       {...state,impossibleEvents:[shinyEvent],activeImpossibleEvent:shinyEvent});
-    assert.match(await panel.locator('[data-game="coin"] .new-card').innerText(),/Coin Colossus.*Coins 加速 \+10%/s);
+    assert.match(await panel.locator('[data-game="coin"] .new-card').innerText(),/Coins 加速 \+10%/);
     const fullCollection=Object.fromEntries(allCards.map(card=>[card.id,1]));
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},{...state,impossibleCards:fullCollection});
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(3)').allTextContents(),['无','无','无','无']);
