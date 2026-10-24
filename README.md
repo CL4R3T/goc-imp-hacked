@@ -1,6 +1,6 @@
 # Game of Chance · Impossible Predictor
 
-通过事件 seed 预测 Impossible 结果的油猴面板，当前版本 **v1.0.0**。
+通过事件 seed 预测 Impossible 结果的油猴面板。
 
 **安装脚本：[下载最新发布版](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)**。下载后在油猴中新建脚本，粘贴完整文件、保存并刷新游戏。平时隐藏入口；打开 Impossible 事件时自动展开预测面板，关闭面板后右下角保留 **Imp 预测** 按钮，点击可重新展开。
 
