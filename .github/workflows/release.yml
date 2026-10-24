@@ -40,25 +40,19 @@ jobs:
         run: |
           set -euo pipefail
           version="$(node -p "require('./package.json').version")"
-          version_tag="v${version}"
-          version_sha="$(gh api "repos/${GH_REPO}/commits/${version_tag}" --jq .sha 2>/dev/null || true)"
-          if [[ -z "$version_sha" || "$version_sha" == "$GITHUB_SHA" ]]; then
-            tag="$version_tag"
-          else
-            tag="build-${GITHUB_SHA}"
+          tag="v${version}"
+          release_tags="$(gh api --paginate "repos/${GH_REPO}/releases" --jq '.[].tag_name')"
+          if grep -Fxq -- "$tag" <<< "$release_tags"; then
+            echo "Release ${tag} already exists; bump package.json version to publish a new release."
+            exit 0
           fi
-          title="v${version} (${GITHUB_SHA:0:7})"
           asset="dist/goc-impossible-predictor.user.js"
           notes="${RUNNER_TEMP}/release-notes.md"
           printf 'Automated main build.\n\nCommit: [%s](%s/%s/commit/%s)\n' \
             "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_SHA" > "$notes"
 
-          if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" "$asset" --clobber
-          else
-            gh release create "$tag" "$asset" --target "$GITHUB_SHA" \
-              --title "$title" --notes-file "$notes" --latest=false
-          fi
+          gh release create "$tag" "$asset" --target "$GITHUB_SHA" \
+            --title "$tag" --notes-file "$notes" --latest=false
 
           main_sha="$(gh api "repos/${GH_REPO}/commits/main" --jq .sha)"
           if [[ "$GITHUB_SHA" == "$main_sha" ]]; then
