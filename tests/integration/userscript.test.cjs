@@ -47,11 +47,12 @@ async function attach(page,initial){
     const text=()=>panel.locator('.body').innerText();
     const openTools=async()=>{await panel.locator('[data-import]').evaluate(el=>el.open=true);};
     assert.equal(await panel.locator('.panel').isVisible(),false);
-    assert.equal(await panel.locator('.launcher').isVisible(),true);
-    assert.ok((await panel.boundingBox()).width<=110);
+    assert.equal(await panel.locator('.launcher').isVisible(),false);
+    await page.waitForTimeout(1100);
+    assert.equal(await panel.isVisible(),false);
     await page.evaluate(value=>window.__test.setContext(value),{...state,impossibleEvents:[...state.impossibleEvents,otherEvent]});
-    await panel.locator('[data-action="open"]').click();
     await panel.locator('.outcome').waitFor();
+    assert.equal(await panel.locator('.launcher').isVisible(),false);
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     assert.equal(await panel.locator('[data-import]').evaluate(el=>el.open),false);
     assert.match(await text(),/第 7 轮失败 · 最终 Lvl 11/);
@@ -78,17 +79,42 @@ async function attach(page,initial){
     // Existing game wheel selections must not alter the explicitly labelled default currency.
     await page.evaluate(()=>{window.__test.setWheel([0,1]);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
     assert.match(await panel.locator('.currencies').innerText(),/转盘结果：Lottery/);
+    const originalBounds=await panel.boundingBox();
+    const header=await panel.locator('header strong').boundingBox();
+    await page.mouse.move(header.x+20,header.y+10);
+    await page.mouse.down();await page.mouse.move(header.x-180,header.y-90);await page.mouse.up();
+    const draggedBounds=await panel.boundingBox();
+    assert.ok(draggedBounds.x<originalBounds.x-100);
     await panel.locator('[data-action="collapse"]').click();
+    await page.waitForTimeout(1100);
+    assert.equal(await panel.locator('.panel').isVisible(),false);
+    assert.equal(await panel.locator('.launcher').isVisible(),true);
+    const launcherBounds=await panel.boundingBox();
+    assert.ok(launcherBounds.width<=110);
+    assert.equal(launcherBounds.x+launcherBounds.width,1260-18);
+    assert.equal(launcherBounds.y+launcherBounds.height,1050-18);
+    await panel.locator('[data-action="open"]').click();
+    assert.equal((await panel.boundingBox()).x,draggedBounds.x);
+    assert.equal((await panel.boundingBox()).y,draggedBounds.y);
+    // Closing the game event and opening its preview again opens the full panel.
+    await page.evaluate(value=>window.__test.setContext(value),{...state,activeImpossibleEvent:null});
+    await panel.locator('.panel').waitFor({state:'hidden'});
+    assert.equal(await panel.locator('.launcher').isVisible(),true);
+    const closedBounds=await panel.boundingBox();
+    assert.equal(closedBounds.x+closedBounds.width,1260-18);
+    assert.equal(closedBounds.y+closedBounds.height,1050-18);
     await page.evaluate(value=>{window.__test.setContext(value.state);window.__test.setPreview(value.event);},
       {state:{...state,activeImpossibleEvent:null,impossibleEvents:[...state.impossibleEvents,otherEvent]},event});
-    await panel.locator('[data-action="open"]').click();
+    await panel.locator('.panel').waitFor();
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     await openTools();await panel.locator('[data-events]').evaluate(el=>el.open=true);
     await panel.locator('[data-control="event"]').selectOption(otherEvent.id);
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),false);
-    await panel.locator('[data-action="collapse"]').click();
-    await page.evaluate(value=>{window.__test.setPreview(null);window.__test.setContext(value);},state);
-    await panel.locator('[data-action="open"]').click();
+    await page.evaluate(()=>window.__test.setPreview(null));
+    await panel.locator('.panel').waitFor({state:'hidden'});
+    assert.equal(await panel.locator('.launcher').isVisible(),true);
+    await page.evaluate(value=>window.__test.setContext(value),state);
+    await panel.locator('.panel').waitFor();
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),true);
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
@@ -116,6 +142,10 @@ async function attach(page,initial){
     await page.evaluate(()=>{document.scripts[0].src='/assets/index-kVDE62Ka.js';window.__test.setContext({
       impossibleEvents:[],impossibleCards:{},impossibleSpinCurrency:0,activeImpossibleEvent:null,impossibleWheelProgress:[]
     });window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
+    assert.equal(await panel.locator('.panel').isVisible(),false);
+    await panel.locator('[data-action="open"]').click();
+    await page.evaluate(()=>window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh());
+    assert.equal(await panel.locator('.panel').isVisible(),true);
     assert.match(await text(),/没有可预测的事件/);
     await openTools();
     await panel.locator('[data-input]').fill(JSON.stringify({seed:example.seed,startLevel:5}));
@@ -158,10 +188,16 @@ async function attach(page,initial){
     const emptyContext=await browser.newContext({viewport:{width:390,height:844}});
     await emptyContext.route('**/*',route=>route.fulfill({status:200,contentType:'text/html',body:fixture}));
     const emptyPage=await emptyContext.newPage();await emptyPage.goto('https://gameofchance.xyz/');
-    await attach(emptyPage,{impossibleEvents:[],impossibleCards:{},impossibleWheelProgress:[]});
-    await emptyPage.locator('#goc-impossible-predictor [data-action="open"]').click();
-    await emptyPage.evaluate(()=>{window.__listDatabases=indexedDB.databases.bind(indexedDB);indexedDB.databases=undefined;});
+    const emptyState={impossibleEvents:[],impossibleCards:{},impossibleWheelProgress:[]};
+    await attach(emptyPage,emptyState);
     const emptyPanel=emptyPage.locator('#goc-impossible-predictor');
+    assert.equal(await emptyPanel.isVisible(),false);
+    await emptyPage.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},state);
+    assert.equal(await emptyPanel.locator('.panel').isVisible(),true);
+    await emptyPage.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},emptyState);
+    assert.equal(await emptyPanel.locator('.panel').isVisible(),false);
+    await emptyPanel.locator('[data-action="open"]').click();
+    await emptyPage.evaluate(()=>{window.__listDatabases=indexedDB.databases.bind(indexedDB);indexedDB.databases=undefined;});
     await emptyPanel.locator('[data-import]').evaluate(el=>el.open=true);
     await emptyPanel.locator('[data-action="idb"]').click();
     await emptyPanel.getByText('备用读取：',{exact:false}).waitFor();
@@ -174,12 +210,23 @@ async function attach(page,initial){
     assert.ok(populatedBounds.x>=0&&populatedBounds.x+populatedBounds.width<=390);
     assert.equal(await emptyPanel.locator('.body').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
     await emptyPanel.screenshot({path:outputPath('screenshots/panel-mobile.png')});
+    // Loading the script with an event already open also expands immediately.
+    await emptyPage.addScriptTag({content:userScript});
+    assert.equal(await emptyPanel.locator('.panel').isVisible(),true);
+    await emptyPanel.locator('[data-action="collapse"]').click();
+    await emptyPage.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
+      {...state,impossibleEvents:[otherEvent],activeImpossibleEvent:otherEvent});
+    assert.equal(await emptyPanel.locator('.panel').isVisible(),true);
+    assert.equal(await emptyPanel.locator('[data-control="event"]').inputValue(),otherEvent.id);
     await emptyContext.close();
     const report={browser:'Chromium, isolated headless profile',scriptVersion:require(rootPath('package.json')).version,
       tested:['compact failure-round/final-level summary','default direct and wheel currencies',
         'maximum Mega with precise stop instructions','all distinct new cards with bonus modes and percentages',
         'maximum Mega per new card and correct stop instructions','targeted Shiny bonus and unknown ownership',
-        'minimum wheel removal per target','collapsed launch and current-event following',
+        'minimum wheel removal per target','hidden launcher until live event opens',
+        'automatic active-event and preview opening','dismissal survives polling',
+        'automatic collapse on active-event and preview exit','manual reopening after event exit',
+        'dragged panel position restored and closed launcher anchored bottom-right','current-event following',
         'React progress updates','version gate','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
       gameActions:0,gameStorageWrites:0,userscriptNetworkRequests:0,pageErrors:errors};

@@ -8,10 +8,10 @@ if(window[INSTANCE]?.destroy) window[INSTANCE].destroy();
 let disposed=false,collapsed=true,allowUnknown=false,follow=true,showClaimed=false;
 let wheelTarget=null,selectedId=null,manual=null,snapshot=null,lastSignature='';
 let lastAutoId=null,lastDBRead=0,dbBusy=false,dbSnapshot=null,uiMessage='',drag=null;
-let detectedBuild=null,previewEvent=null;
+let detectedBuild=null,previewEvent=null,lastVisibleEventId=null,panelPosition=null;
 const host=document.createElement('div');
 host.id=HOST_ID;
-host.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2147483646;width:106px;max-width:calc(100vw - 20px);font:13px system-ui,sans-serif;color-scheme:dark;';
+host.style.cssText='display:none;position:fixed;right:18px;bottom:18px;z-index:2147483646;width:106px;max-width:calc(100vw - 20px);font:13px system-ui,sans-serif;color-scheme:dark;';
 const shadow=host.attachShadow({mode:'open'});
 shadow.innerHTML=`<style>
 :host{all:initial;font:13px/1.5 system-ui,sans-serif;color:#e9eef6;color-scheme:dark}*{box-sizing:border-box}
@@ -208,7 +208,18 @@ function refresh(force=false){
   if(disposed)return;
   detectedBuild=findBuild();
   let state,error=null;
-  try{state=manual?manualSnapshot(manual):findLive()||dbSnapshot;}catch(e){error=e.message;}
+  let live=null;
+  previewEvent=null;
+  try{live=findLive();state=manual?manualSnapshot(manual):live||dbSnapshot;}catch(e){error=e.message;}
+  // Observe live event transitions even while collapsed; saved events do not open the UI.
+  const visibleEventId=live?(previewEvent?.id||live.activeId):null;
+  const newlyOpened=visibleEventId&&visibleEventId!==lastVisibleEventId;
+  const eventClosed=live&&!visibleEventId&&lastVisibleEventId;
+  // A missing live connection alone is not evidence that the player exited the event.
+  if(live)lastVisibleEventId=visibleEventId;
+  if(newlyOpened){setPanelOpen(true);return;}
+  if(eventClosed&&!collapsed){setPanelOpen(false);return;}
+  if(collapsed)return;
   snapshot=state;
   if(!manual && !state && Date.now()-lastDBRead>8000 && !dbBusy)readDatabase();
   if(state?.kind!=='live')previewEvent=null;
@@ -237,7 +248,13 @@ shadow.addEventListener('change',event=>{
   refresh(true);
 });
 function setPanelOpen(open){
+  if(!open&&!collapsed){
+    panelPosition={left:host.style.left,top:host.style.top,right:host.style.right,bottom:host.style.bottom};
+    drag=null;
+  }
+  if(!open||collapsed)Object.assign(host.style,open&&panelPosition?panelPosition:{left:'auto',top:'auto',right:'18px',bottom:'18px'});
   collapsed=!open;
+  host.style.display='';
   body.hidden=collapsed;
   shadow.querySelector('.panel').hidden=collapsed;
   shadow.querySelector('.launcher').hidden=!collapsed;
@@ -281,6 +298,7 @@ header.addEventListener('pointermove',event=>{
   host.style.bottom='auto';host.style.right='auto';
 });
 header.addEventListener('pointerup',()=>{drag=null;});header.addEventListener('pointercancel',()=>{drag=null;});
-const timer=setInterval(()=>{if(!document.hidden&&!collapsed)refresh();},900);
-function onFocus(){if(!collapsed)refresh(true);}window.addEventListener('focus',onFocus);
+const timer=setInterval(()=>{if(!document.hidden)refresh();},900);
+function onFocus(){refresh(true);}window.addEventListener('focus',onFocus);
 window[INSTANCE]={version:USERSCRIPT_VERSION,refresh:()=>refresh(true),destroy(){disposed=true;clearInterval(timer);window.removeEventListener('focus',onFocus);host.remove();delete window[INSTANCE];}};
+refresh();

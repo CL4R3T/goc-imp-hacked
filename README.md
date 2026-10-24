@@ -2,7 +2,7 @@
 
 通过事件 seed 预测 Impossible 结果的油猴面板，当前版本 **v1.0.0**。
 
-**安装脚本：[下载最新发布版](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)**。下载后在油猴中新建脚本，粘贴完整文件、保存并刷新游戏。先打开一个 Impossible 事件，再点击右下角的 **Imp 预测**。
+**安装脚本：[下载最新发布版](https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js)**。下载后在油猴中新建脚本，粘贴完整文件、保存并刷新游戏。平时隐藏入口；打开 Impossible 事件时自动展开预测面板，关闭面板后右下角保留 **Imp 预测** 按钮，点击可重新展开。
 
 面板显示失败轮次、最终等级、来源及转盘结果；每个小游戏的最高 Mega 和结算方式；所有可获得的新卡及其加成模式、加成大小、对应最高 Mega 和结算方式；目标币种所需关闭的最少扇区组合。只读取和计算，不自动执行游戏操作或修改存档。
 
