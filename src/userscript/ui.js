@@ -22,7 +22,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{border:1px solid 
 .body{max-height:min(78vh,820px);overflow:auto;padding:12px}.status{font-size:11px;color:#9eacbf;margin-bottom:8px}.good{color:#7ce5af}.bad{color:#ff999d}.amber{color:#ffd36d}.muted{color:#96a1b2}.tiny{font-size:11px}.mono{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row label{display:flex;align-items:center;gap:5px}.row select{flex:1;min-width:0}select,textarea{background:#0c1018;border:1px solid #414958;border-radius:6px;padding:6px;width:100%}
 .event{font-weight:650;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.box{background:#171d29;border:1px solid #303949;border-radius:9px;padding:10px;margin-top:10px}
-.outcome{font-size:15px;margin:5px 0}.currencies{margin-bottom:10px}.wheel-summary{border-top:1px solid #303747;padding-top:10px;margin-top:9px}.wheel-summary select{width:auto;flex:1}.game-summary td:first-child{width:20%}.game-summary td:nth-child(2){width:44%}.game-summary td{padding:8px 4px}.game-summary .tiny{line-height:1.55}
+.outcome{font-size:15px;margin:5px 0}.currencies{margin-bottom:10px}.wheel-summary{border-top:1px solid #303747;padding-top:10px;margin-top:9px}.wheel-summary select{width:auto;flex:1}.game-summary{table-layout:fixed}.game-summary th:first-child{width:16%}.game-summary th:nth-child(2){width:31%}.game-summary td{padding:8px 4px;overflow-wrap:anywhere}.game-summary .tiny{line-height:1.55}.new-card{margin-top:7px}.new-card+.new-card{border-top:1px solid #303747;padding-top:7px}
 
 table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}th,td{padding:6px 5px;text-align:left;border-bottom:1px solid #303747;vertical-align:top}th{font-size:11px;color:#96a1b2;font-weight:500}details>summary{cursor:pointer;list-style-position:inside;color:#dbe6f6}textarea{min-height:100px;resize:vertical;margin-top:7px}.empty{padding:18px 4px;color:#a8b5c8}.toolbar{margin-top:11px;border-top:1px solid #303747;padding-top:9px}.warn{border:1px solid #79603b;color:#ffd36d;background:#30291c;border-radius:7px;padding:8px;margin:8px 0}.error{white-space:pre-wrap;color:#ffb7bb}.break{overflow-wrap:anywhere}
 </style><button class="launcher" data-action="open" title="打开预测面板，自动读取当前 Impossible 事件">Imp 预测</button><section class="panel" hidden><header><strong>Impossible · 预测</strong><button data-action="refresh" title="刷新读取">↻</button><button data-action="collapse" title="关闭面板">×</button></header><div class="body" hidden><div class="status">正在连接游戏状态…</div></div></section>`;
@@ -140,9 +140,15 @@ function configFor(state,event,counts){
   if(available)config.availableSources=available;
   return config;
 }
-function newCardHtml(card){
-  if(card.status==='available')return '<span class="good">有</span><div class="tiny muted">'+esc(card.operation)+'</div>';
-  if(card.status==='already_new')return '<span class="good">已获新卡</span>';
+function newCardHtml(card,complete){
+  if(card.status==='available'||card.status==='already_new'){
+    const cards=card.cards.map(item=>{
+      const source=item.targetSource||item.source;
+      const target=source==='global'?'全模式':SOURCE_NAMES[source]||source;
+      return '<div class="new-card" data-card="'+esc(item.id)+'"><strong>'+esc(item.name)+'</strong><div class="tiny good">'+esc(target)+' 加速 +'+esc(item.percent)+'%</div><div class="tiny">最高 <strong class="amber mono">'+number(item.maxMegas)+'</strong> Mega</div><div class="tiny muted">'+esc(item.operation)+'</div></div>';
+    }).join('');
+    return '<span class="good">'+(card.status==='already_new'?'已获新卡':'有 · 新卡最多 '+number(card.maxMegas)+' Mega')+'</span>'+(!complete?'<div class="tiny amber">（仅模拟范围内）</div>':'')+cards;
+  }
   if(card.status==='already_duplicate')return '<span class="muted">已获重复卡</span>';
   if(card.status==='none')return '<span class="muted">无</span>';
   return '<span class="amber tiny">待读取收藏</span>';
@@ -151,9 +157,9 @@ function gamesHtml(result,counts){
   const rows=result.branches.map(branch=>{
     const info=SUMMARY.summarizeBranch(branch);
     const locked=snapshot?.kind!=='manual'&&!RULES.isMinigameUnlocked(branch.game,counts);
-    return '<tr data-game="'+branch.game+'"><td><strong>'+esc(GAME_NAMES[branch.game])+'</strong>'+(locked?'<div class="tiny muted">未解锁</div>':'')+'</td><td><strong class="amber mono">'+number(info.maxMegas)+'</strong>'+(info.complete?'':'<span class="tiny amber">（仅模拟范围内）</span>')+'<div class="tiny muted">'+esc(info.operation)+'</div></td><td>'+newCardHtml(info.newCard)+'</td></tr>';
+    return '<tr data-game="'+branch.game+'"><td><strong>'+esc(GAME_NAMES[branch.game])+'</strong>'+(locked?'<div class="tiny muted">未解锁</div>':'')+'</td><td><strong class="amber mono">'+number(info.maxMegas)+'</strong>'+(info.complete?'':'<span class="tiny amber">（仅模拟范围内）</span>')+'<div class="tiny muted">'+esc(info.operation)+'</div></td><td>'+newCardHtml(info.newCard,info.complete)+'</td></tr>';
   }).join('');
-  return '<table class="game-summary"><thead><tr><th>小游戏</th><th>最多 Mega / 结算方式</th><th>新卡 / 结算方式</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  return '<table class="game-summary"><thead><tr><th>小游戏</th><th>最多 Mega / 结算方式</th><th>新卡加成 / 最高 Mega / 结算方式</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 function wheelHtml(result,config,state){
   if(result.wheel.status==='already_spun')return '<div class="wheel-summary tiny">已转出 <strong class="amber">'+esc(SOURCE_NAMES[result.wheel.source]||result.wheel.source)+'</strong></div>';
@@ -235,7 +241,7 @@ function setPanelOpen(open){
   body.hidden=collapsed;
   shadow.querySelector('.panel').hidden=collapsed;
   shadow.querySelector('.launcher').hidden=!collapsed;
-  host.style.width=collapsed?'106px':'470px';
+  host.style.width=collapsed?'106px':'600px';
   if(open){
     // Reconnect on every open, even if another event was selected or JSON was loaded previously.
     manual=null;follow=true;showClaimed=false;lastAutoId=null;previewEvent=null;lastSignature='';uiMessage='';

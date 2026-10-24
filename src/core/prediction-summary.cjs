@@ -18,11 +18,24 @@ function summarizeBranch(branch){
   const best=branch.stopOptions.find(p=>p.afterTurns===branch.bestMegaOption.afterTurns&&p.reason===branch.bestMegaOption.reason);
   const fresh=branch.stopOptions.find(p=>p.card.isNew===true);
   const drawn=branch.stopOptions.find(p=>p.card.status==='already_drawn');
+  // Stops are mutually exclusive: keep the best payout for each distinct new card.
+  const cardsById=new Map();
+  for(const point of branch.stopOptions){
+    const card=point.card;
+    if(card.isNew!==true&&!(card.status==='already_drawn'&&card.wasNew===true))continue;
+    const previous=cardsById.get(card.id);
+    if(!previous||point.megas>previous.maxMegas)cardsById.set(card.id,{
+      ...card,level:point.level,maxMegas:point.megas,operation:operation(point,currentTurns),
+    });
+  }
+  const cards=[...cardsById.values()];
   let newCard;
   if(drawn)newCard={status:drawn.card.wasNew===true?'already_new':drawn.card.wasNew===false?'already_duplicate':'unknown'};
   else if(fresh)newCard={status:'available',level:fresh.level,operation:operation(fresh,currentTurns)};
   else if(branch.stopOptions.some(p=>p.card.isNew===undefined))newCard={status:'unknown'};
   else newCard={status:branch.complete?'none':'unknown'};
+  newCard.cards=cards;
+  if(cards.length)newCard.maxMegas=Math.max(...cards.map(card=>card.maxMegas));
   return {game:branch.game,complete:branch.complete,maxMegas:best.megas,
     operation:operation(best,currentTurns),newCard};
 }

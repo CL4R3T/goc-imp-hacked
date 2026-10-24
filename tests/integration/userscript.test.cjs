@@ -59,8 +59,14 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),4);
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(2) > strong').allTextContents(),['860','870','857','680']);
     assert.ok((await panel.locator('[data-game] td:nth-child(2)').allTextContents()).every(t=>t.includes('再玩 6 轮后结算')));
-    assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('有')&&t.includes('现在结算')));
-    assert.doesNotMatch(await text(),/seed |Stackjelly|Coin IV/);
+    assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('有')&&t.includes('再玩 2 轮后结算')));
+    const coinCards=panel.locator('[data-game="coin"] .new-card');
+    assert.equal(await coinCards.count(),3);
+    assert.deepEqual(await coinCards.locator(':scope > strong').allTextContents(),['Coin IV','Cryolume','Stackjelly']);
+    assert.match(await coinCards.nth(0).innerText(),/Darts 加速 \+2%.*最高 170 Mega.*再玩 2 轮后结算/s);
+    assert.match(await coinCards.nth(1).innerText(),/全模式 加速 \+1%.*最高 260 Mega.*再玩 3 轮后结算/s);
+    assert.match(await coinCards.nth(2).innerText(),/全模式 加速 \+1%.*最高 860 Mega.*再玩 6 轮后结算/s);
+    assert.doesNotMatch(await text(),/seed /);
     assert.equal(await panel.locator('[data-branch]').count(),0);
     await panel.locator('[data-control="wheel-target"]').selectOption('dart');
     assert.match(await panel.locator('.wheel-plan').innerText(),/Coins、Dice/);
@@ -85,6 +91,14 @@ async function attach(page,initial){
     await panel.locator('[data-action="open"]').click();
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),true);
+    await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
+      {...state,impossibleCards:{'unique:5:global':1}});
+    assert.match(await panel.locator('[data-game="slot"] td:nth-child(3)').innerText(),/新卡最多 246 Mega/);
+    assert.equal(await panel.locator('[data-game="slot"] .new-card').count(),2);
+    const shinyEvent={...event,seed:r.encodeSeed(37),probability:r.IMPOSSIBLE_THRESHOLD_PERCENT};
+    await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
+      {...state,impossibleEvents:[shinyEvent],activeImpossibleEvent:shinyEvent});
+    assert.match(await panel.locator('[data-game="coin"] .new-card').innerText(),/Coin Colossus.*Coins 加速 \+10%/s);
     const fullCollection=Object.fromEntries(allCards.map(card=>[card.id,1]));
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},{...state,impossibleCards:fullCollection});
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(3)').allTextContents(),['无','无','无','无']);
@@ -108,6 +122,7 @@ async function attach(page,initial){
     await panel.locator('[data-action="import"]').click();
     assert.match(await text(),/手动数据/);
     assert.match(await text(),/待读取收藏/);
+    assert.equal(await panel.locator('.new-card').count(),0);
     assert.match(await text(),/需读取可用币种/);
     const hostile={...event,id:'hostile',label:'<img src=x onerror="window.__calls++">'};
     await page.evaluate(value=>window.__test.setContext(value),{...state,impossibleEvents:[hostile],activeImpossibleEvent:hostile});
@@ -153,10 +168,17 @@ async function attach(page,initial){
     assert.deepEqual(await emptyPage.evaluate(()=>window.__listDatabases()),[]);
     assert.equal(await emptyPage.evaluate(()=>window.__idbWrites),0);
     const bounds=await emptyPanel.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390);
+    await emptyPage.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},state);
+    assert.equal(await emptyPanel.locator('.new-card').count(),12);
+    const populatedBounds=await emptyPanel.boundingBox();
+    assert.ok(populatedBounds.x>=0&&populatedBounds.x+populatedBounds.width<=390);
+    assert.equal(await emptyPanel.locator('.body').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
+    await emptyPanel.screenshot({path:outputPath('screenshots/panel-mobile.png')});
     await emptyContext.close();
     const report={browser:'Chromium, isolated headless profile',scriptVersion:require(rootPath('package.json')).version,
       tested:['compact failure-round/final-level summary','default direct and wheel currencies',
-        'maximum Mega with precise stop instructions','new-card availability across all stop points',
+        'maximum Mega with precise stop instructions','all distinct new cards with bonus modes and percentages',
+        'maximum Mega per new card and correct stop instructions','targeted Shiny bonus and unknown ownership',
         'minimum wheel removal per target','collapsed launch and current-event following',
         'React progress updates','version gate','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
