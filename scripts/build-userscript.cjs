@@ -15,10 +15,11 @@ const summary=browserModule('src/core/prediction-summary.cjs');
 const ui=read('src/userscript/ui.js');
 const header=`// ==UserScript==
 // @name         Game of Chance · Impossible 预测面板
-// @namespace    local.goc.impossible-predictor
+// @namespace    https://github.com/CL4R3T
+// @author       CL4R3T
 // @version      ${version}
 // @description  本地读取 Impossible 状态，预测逐局收益、抽卡及货币转盘；不修改游戏存档。
-// @license MIT
+// @license      MIT
 // @match        https://gameofchance.xyz/*
 // @match        https://*.gameofchance.xyz/*
 // @match        https://gameofchance.pages.dev/*
@@ -26,6 +27,8 @@ const header=`// ==UserScript==
 // @grant        none
 // @sandbox      raw
 // @noframes
+// @updateURL    https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js
+// @downloadURL  https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js
 // ==/UserScript==
 
 `;
