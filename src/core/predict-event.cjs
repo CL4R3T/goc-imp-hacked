@@ -157,7 +157,7 @@ function predict(config) {
       stopOptions,turns};
   });
   return {storedSeed:seed,rawSeed,
-    assumptions:{build:'index-kVDE62Ka.js',heldCardsKnown:held!==undefined,
+    assumptions:{build:r.SUPPORTED_BUILDS[0],supportedBuilds:r.SUPPORTED_BUILDS,heldCardsKnown:held!==undefined,
       source:event?.source ?? config.source ?? null,
       startLevelOverridden:!event && own(config,'startLevel'),
       minigameUnlocksChecked:false,

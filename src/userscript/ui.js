@@ -1,5 +1,5 @@
 // Browser adapter and UI. Uses page data only; never calls a game action or writes storage.
-const EXPECTED_BUILD='index-kVDE62Ka.js';
+const EXPECTED_BUILD=RULES.SUPPORTED_BUILDS[0];
 const INSTANCE='__GOC_IMPOSSIBLE_PREDICTOR_V1__';
 const HOST_ID='goc-impossible-predictor';
 const SOURCE_NAMES={coin:'Coins',dice:'Dice',card:'Cards',d20:'D20',roulette:'Roulette',lottery:'Lottery',dart:'Darts',rocket:'Rockets',element:'Elements',animal:'Animals',plant:'Plants'};
@@ -185,7 +185,7 @@ function render(state,event,events,result,config,counts,error){
   const input=body.querySelector('[data-input]')?.value||'';
   if(shadow.activeElement?.matches('textarea'))return;
   let html='';
-  if(detectedBuild!==EXPECTED_BUILD)html+='<div class="warn tiny">'+(detectedBuild?'游戏版本不同，需核对规则。':'未识别游戏版本。')+'<label class="row"><input type="checkbox" data-control="allow" '+(allowUnknown?'checked':'')+'>继续使用已有规则</label></div>';
+  if(!RULES.SUPPORTED_BUILDS.includes(detectedBuild))html+='<div class="warn tiny">'+(detectedBuild?'游戏版本不同，需核对规则。':'未识别游戏版本。')+'<label class="row"><input type="checkbox" data-control="allow" '+(allowUnknown?'checked':'')+'>继续使用已有规则</label></div>';
   if(event)html+='<div class="event" title="'+esc(event.label||event.id)+'">'+esc(event.label||event.id)+'</div>';
   if(state&&state.kind!=='live')html+='<div class="tiny amber">'+esc(state.label)+'</div>';
   if(event?.chain?.claimed)html+='<div class="tiny amber">已领取，仅供回看。</div>';
@@ -230,7 +230,7 @@ function refresh(force=false){
     counts,follow,showClaimed,wheelTarget,allowUnknown,detectedBuild,uiMessage,error});
   if(!force&&signature===lastSignature)return;
   let result=null;
-  if(config&&(detectedBuild===EXPECTED_BUILD||allowUnknown)){
+  if(config&&(RULES.SUPPORTED_BUILDS.includes(detectedBuild)||allowUnknown)){
     try{result=PREDICTOR.predict(config);}catch(e){error='预测失败：'+e.message;}
   }
   render(state,event,events,result,config,counts,error);
@@ -280,7 +280,7 @@ shadow.addEventListener('click',event=>{
   }
   if(action==='diagnostics'){
     const target=shadow.querySelector('[data-diagnostics]');
-    target.textContent=JSON.stringify({script:USERSCRIPT_VERSION,build:detectedBuild,expectedBuild:EXPECTED_BUILD,
+    target.textContent=JSON.stringify({script:USERSCRIPT_VERSION,build:detectedBuild,expectedBuild:EXPECTED_BUILD,supportedBuilds:RULES.SUPPORTED_BUILDS,
       source:snapshot?.kind||null,eventCount:snapshot?.events.length||0,hasCards:snapshot?.cards!==undefined,
       wheelProgressKnown:Array.isArray(snapshot?.progress),lastMessage:uiMessage});
   }

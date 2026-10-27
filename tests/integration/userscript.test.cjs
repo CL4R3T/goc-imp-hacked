@@ -58,6 +58,7 @@ async function attach(page,initial){
     assert.match(await text(),/第 7 轮失败 · 最终 Lvl 11/);
     assert.match(await text(),/来源：Coins · 转盘结果：Lottery/);
     assert.equal(await panel.locator('[data-game]').count(),4);
+    assert.equal(await panel.locator('[data-control="allow"]').count(),0);
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(2) > strong').allTextContents(),['860','870','857','680']);
     assert.ok((await panel.locator('[data-game] td:nth-child(2)').allTextContents()).every(t=>t.includes('再玩 6 轮后结算')));
     assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('再玩 2 轮后结算')));
@@ -135,6 +136,12 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),1);
     assert.match(await panel.locator('[data-game="deal"]').innerText(),/870.*再玩 5 轮后结算/s);
     assert.match(await panel.locator('.outcome').innerText(),/第 7 轮失败/);
+    // Both audited builds run directly; other builds still require an explicit override.
+    for(const build of ['index-kVDE62Ka.js','index-BYtwn7Gy.js']){
+      await page.evaluate(build=>{document.scripts[0].src='/assets/'+build;window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},build);
+      assert.equal(await panel.locator('[data-game]').count(),1);
+      assert.equal(await panel.locator('[data-control="allow"]').count(),0);
+    }
     await page.evaluate(()=>{document.scripts[0].src='/assets/index-unknown.js';window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
     assert.equal(await panel.locator('[data-game]').count(),0);
     await panel.locator('[data-control="allow"]').check();
@@ -227,7 +234,7 @@ async function attach(page,initial){
         'automatic active-event and preview opening','dismissal survives polling',
         'automatic collapse on active-event and preview exit','manual reopening after event exit',
         'dragged panel position restored and closed launcher anchored bottom-right','current-event following',
-        'React progress updates','version gate','unknown inputs','HTML escaping',
+        'React progress updates','both verified builds run without override','unknown-build version gate','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
       gameActions:0,gameStorageWrites:0,userscriptNetworkRequests:0,pageErrors:errors};
     fs.writeFileSync(outputPath('reports/browser.json'),JSON.stringify(report,null,2)+'\n');

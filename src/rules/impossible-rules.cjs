@@ -1,6 +1,9 @@
 // Impossible prediction rules.
 "use strict";
 
+// Verified against the downloaded bundles on 2026-10-27; prediction rules match.
+const SUPPORTED_BUILDS = Object.freeze(['index-BYtwn7Gy.js', 'index-kVDE62Ka.js']);
+
 const b1 = {
   "coin": {
     "name": "Coins"
@@ -683,6 +686,7 @@ const drawCard = (e, t, a = 0, s = Math.random) => {
   };
 };
 module.exports = {
+  "SUPPORTED_BUILDS": SUPPORTED_BUILDS,
   "IMPOSSIBLE_THRESHOLD_PERCENT": IMPOSSIBLE_THRESHOLD_PERCENT,
   "MINIGAMES": MINIGAMES,
   "WHEEL_SOURCES": WHEEL_SOURCES,
