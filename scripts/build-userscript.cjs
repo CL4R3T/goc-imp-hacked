@@ -27,8 +27,8 @@ const header=`// ==UserScript==
 // @grant        none
 // @sandbox      raw
 // @noframes
-// @updateURL    https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js
-// @downloadURL  https://github.com/CL4R3T/goc-imp-hacker/releases/latest/download/goc-impossible-predictor.user.js
+// @updateURL    https://github.com/CL4R3T/goc-imp-hacked/releases/latest/download/goc-impossible-predictor.user.js
+// @downloadURL  https://github.com/CL4R3T/goc-imp-hacked/releases/latest/download/goc-impossible-predictor.user.js
 // ==/UserScript==
 
 `;
