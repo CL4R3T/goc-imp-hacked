@@ -136,8 +136,8 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),1);
     assert.match(await panel.locator('[data-game="deal"]').innerText(),/870.*再玩 5 轮后结算/s);
     assert.match(await panel.locator('.outcome').innerText(),/第 7 轮失败/);
-    // Both audited builds run directly; other builds still require an explicit override.
-    for(const build of ['index-kVDE62Ka.js','index-BYtwn7Gy.js']){
+    // Audited builds run directly; other builds still require an explicit override.
+    for(const build of ['index-kVDE62Ka.js','index-BYtwn7Gy.js','index-7yX3ACUS.js']){
       await page.evaluate(build=>{document.scripts[0].src='/assets/'+build;window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},build);
       assert.equal(await panel.locator('[data-game]').count(),1);
       assert.equal(await panel.locator('[data-control="allow"]').count(),0);
@@ -234,7 +234,7 @@ async function attach(page,initial){
         'automatic active-event and preview opening','dismissal survives polling',
         'automatic collapse on active-event and preview exit','manual reopening after event exit',
         'dragged panel position restored and closed launcher anchored bottom-right','current-event following',
-        'React progress updates','both verified builds run without override','unknown-build version gate','unknown inputs','HTML escaping',
+        'React progress updates','all three verified builds run without override','unknown-build version gate','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
       gameActions:0,gameStorageWrites:0,userscriptNetworkRequests:0,pageErrors:errors};
     fs.writeFileSync(outputPath('reports/browser.json'),JSON.stringify(report,null,2)+'\n');

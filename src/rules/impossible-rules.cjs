@@ -1,8 +1,8 @@
 // Impossible prediction rules.
 "use strict";
 
-// Verified against the downloaded bundles on 2026-10-27; prediction rules match.
-const SUPPORTED_BUILDS = Object.freeze(['index-BYtwn7Gy.js', 'index-kVDE62Ka.js']);
+// Verified against the downloaded bundles through 2026-11-03; prediction rules match.
+const SUPPORTED_BUILDS = Object.freeze(['index-7yX3ACUS.js', 'index-BYtwn7Gy.js', 'index-kVDE62Ka.js']);
 
 const b1 = {
   "coin": {
