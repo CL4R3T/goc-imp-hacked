@@ -22,7 +22,7 @@ async function attach(page,initial){
     const root={stateNode:{current:null},child:provider};root.stateNode.current=root;
     document.getElementById('root')['__reactContainer$fixture']=root;
     window.__test={setContext(v){provider.memoizedProps={value:prepare(v)};},setWheel(removed){
-      provider.child={memoizedProps:{removed,available:Array.from({length:11},(_,i)=>i),isSpinning:false,onToggleRemoved(){window.__calls++;}}};
+      provider.child={memoizedProps:{removed,available:Array.from({length:12},(_,i)=>i),isSpinning:false,onToggleRemoved(){window.__calls++;}}};
     },setPreview(event){provider.child=event?{memoizedProps:{event,onStart(){window.__calls++;},onDismiss(){window.__calls++;}}}:null;
     },detach(){delete document.getElementById('root')['__reactContainer$fixture'];}};
     const original=Storage.prototype.setItem;
@@ -63,20 +63,24 @@ async function attach(page,initial){
     assert.ok((await panel.locator('[data-game] td:nth-child(2)').allTextContents()).every(t=>t.includes('再玩 6 轮后结算')));
     assert.ok((await panel.locator('[data-game] td:nth-child(3)').allTextContents()).every(t=>t.includes('再玩 2 轮后结算')));
     const coinCards=panel.locator('[data-game="coin"] .new-card');
-    assert.equal(await coinCards.count(),3);
-    assert.deepEqual(await coinCards.evaluateAll(cards=>cards.map(card=>card.dataset.card)),['coin:3:dart','unique:2:global','unique:5:global']);
+    assert.equal(await coinCards.count(),4);
+    assert.deepEqual(await coinCards.evaluateAll(cards=>cards.map(card=>card.dataset.card)),['coin:3:dart','unique:3:global','unique:5:global','unique:6:global']);
     assert.match(await coinCards.nth(0).innerText(),/Darts 加速 \+2%.*最高 170 Mega.*再玩 2 轮后结算/s);
     assert.match(await coinCards.nth(1).innerText(),/全模式 加速 \+1%.*最高 260 Mega.*再玩 3 轮后结算/s);
-    assert.match(await coinCards.nth(2).innerText(),/全模式 加速 \+1%.*最高 860 Mega.*再玩 6 轮后结算/s);
+    assert.match(await coinCards.nth(2).innerText(),/全模式 加速 \+1%.*最高 380 Mega.*再玩 4 轮后结算/s);
+    assert.match(await coinCards.nth(3).innerText(),/全模式 加速 \+1%.*最高 860 Mega.*再玩 6 轮后结算/s);
     assert.doesNotMatch(await text(),/seed |Coin IV|Cryolume|Stackjelly|有 · 新卡最多/);
     assert.equal(await panel.locator('[data-branch]').count(),0);
     await panel.locator('[data-control="wheel-target"]').selectOption('dart');
-    assert.match(await panel.locator('.wheel-plan').innerText(),/Coins、Dice/);
-    assert.match(await text(),/2 token，当前 0/);
+    assert.match(await panel.locator('.wheel-plan').innerText(),/最少关闭：Coins$/);
+    assert.match(await text(),/1 token，当前 0/);
     await panel.locator('[data-control="wheel-target"]').selectOption('lottery');
     assert.match(await panel.locator('.wheel-plan').innerText(),/不用关闭/);
     await panel.locator('[data-control="wheel-target"]').selectOption('roulette');
-    assert.match(await panel.locator('.wheel-plan').innerText(),/最少关闭：Lottery/);
+    assert.match(await panel.locator('.wheel-plan').innerText(),/最少关闭：Lottery、Darts/);
+    await panel.locator('[data-control="wheel-target"]').selectOption('fossil');
+    assert.match(await text(),/11 token，当前 0/);
+    assert.equal(await panel.locator('[data-control="wheel-target"] option').count(),12);
     // Existing game wheel selections must not alter the explicitly labelled default currency.
     await page.evaluate(()=>{window.__test.setWheel([0,1]);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
     assert.match(await panel.locator('.currencies').innerText(),/转盘结果：Lottery/);
@@ -119,13 +123,22 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-control="event"]').inputValue(),event.id);
     assert.equal(await panel.locator('[data-control="follow"]').isChecked(),true);
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
-      {...state,impossibleCards:{'unique:5:global':1}});
+      {...state,impossibleCards:{'unique:6:global':1}});
     assert.match(await panel.locator('[data-game="slot"] .new-card').nth(0).innerText(),/Darts 加速 \+5%.*最高 246 Mega/s);
-    assert.equal(await panel.locator('[data-game="slot"] .new-card').count(),2);
+    assert.equal(await panel.locator('[data-game="slot"] .new-card').count(),3);
     const shinyEvent={...event,seed:r.encodeSeed(37),probability:r.IMPOSSIBLE_THRESHOLD_PERCENT};
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
       {...state,impossibleEvents:[shinyEvent],activeImpossibleEvent:shinyEvent});
     assert.match(await panel.locator('[data-game="coin"] .new-card').innerText(),/Coins 加速 \+10%/);
+    const fossilEvent={...event,source:'fossil',seed:r.encodeSeed(4),chain:null};
+    await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
+      {...state,impossibleEvents:[fossilEvent],activeImpossibleEvent:fossilEvent});
+    assert.match(await panel.locator('.currencies').innerText(),/来源：Fossil Dig/);
+    assert.match(await panel.locator('[data-game="slot"] [data-card="slot:3:fossil"]').innerText(),/Fossil Dig 加速 \+5%/);
+    const tuskEvent={...event,seed:r.encodeSeed(37),probability:r.IMPOSSIBLE_THRESHOLD_PERCENT};
+    await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},
+      {...state,impossibleEvents:[tuskEvent],activeImpossibleEvent:tuskEvent});
+    assert.match(await panel.locator('[data-game="slot"] [data-card="slot:0:global"]').innerText(),/Fossil Dig 加速 \+10%/);
     const fullCollection=Object.fromEntries(allCards.map(card=>[card.id,1]));
     await page.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},{...state,impossibleCards:fullCollection});
     assert.deepEqual(await panel.locator('[data-game] td:nth-child(3)').allTextContents(),['无','无','无','无']);
@@ -136,17 +149,19 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),1);
     assert.match(await panel.locator('[data-game="deal"]').innerText(),/870.*再玩 5 轮后结算/s);
     assert.match(await panel.locator('.outcome').innerText(),/第 7 轮失败/);
-    // Audited builds run directly; other builds still require an explicit override.
-    for(const build of ['index-kVDE62Ka.js','index-BYtwn7Gy.js','index-7yX3ACUS.js']){
+    // v0.31.0 runs directly; older card pools must not silently use the new rules.
+    for(const build of ['index-BljK5PRK.js']){
       await page.evaluate(build=>{document.scripts[0].src='/assets/'+build;window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},build);
       assert.equal(await panel.locator('[data-game]').count(),1);
       assert.equal(await panel.locator('[data-control="allow"]').count(),0);
     }
-    await page.evaluate(()=>{document.scripts[0].src='/assets/index-unknown.js';window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
-    assert.equal(await panel.locator('[data-game]').count(),0);
+    for(const build of ['index-kVDE62Ka.js','index-BYtwn7Gy.js','index-7yX3ACUS.js','index-unknown.js']){
+      await page.evaluate(build=>{document.scripts[0].src='/assets/'+build;window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},build);
+      assert.equal(await panel.locator('[data-game]').count(),0);
+    }
     await panel.locator('[data-control="allow"]').check();
     assert.equal(await panel.locator('[data-game]').count(),1);
-    await page.evaluate(()=>{document.scripts[0].src='/assets/index-kVDE62Ka.js';window.__test.setContext({
+    await page.evaluate(()=>{document.scripts[0].src='/assets/index-BljK5PRK.js';window.__test.setContext({
       impossibleEvents:[],impossibleCards:{},impossibleSpinCurrency:0,activeImpossibleEvent:null,impossibleWheelProgress:[]
     });window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();});
     assert.equal(await panel.locator('.panel').isVisible(),false);
@@ -186,6 +201,7 @@ async function attach(page,initial){
     await openTools();await panel.locator('[data-action="idb"]').click();
     await panel.locator('.body > .amber').filter({hasText:'存档快照'}).waitFor();
     assert.equal(await panel.locator('[data-game]').count(),4);
+    assert.equal(await panel.locator('[data-control="wheel-target"] option[value="fossil"]').innerText(),'Fossil Dig');
     assert.deepEqual(await page.evaluate(()=>({calls:window.__calls,storage:window.__storageWrites,idb:window.__idbWrites})),before);
     await panel.locator('[data-action="collapse"]').click();
     assert.equal(await panel.locator('.body').isVisible(),false);
@@ -212,7 +228,7 @@ async function attach(page,initial){
     assert.equal(await emptyPage.evaluate(()=>window.__idbWrites),0);
     const bounds=await emptyPanel.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=390);
     await emptyPage.evaluate(value=>{window.__test.setContext(value);window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},state);
-    assert.equal(await emptyPanel.locator('.new-card').count(),12);
+    assert.equal(await emptyPanel.locator('.new-card').count(),16);
     const populatedBounds=await emptyPanel.boundingBox();
     assert.ok(populatedBounds.x>=0&&populatedBounds.x+populatedBounds.width<=390);
     assert.equal(await emptyPanel.locator('.body').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
@@ -234,7 +250,7 @@ async function attach(page,initial){
         'automatic active-event and preview opening','dismissal survives polling',
         'automatic collapse on active-event and preview exit','manual reopening after event exit',
         'dragged panel position restored and closed launcher anchored bottom-right','current-event following',
-        'React progress updates','all three verified builds run without override','unknown-build version gate','unknown inputs','HTML escaping',
+        'React progress updates','v0.31.0 runs without override','old and unknown build version gate','12 wheel sources including Fossil Dig','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
       gameActions:0,gameStorageWrites:0,userscriptNetworkRequests:0,pageErrors:errors};
     fs.writeFileSync(outputPath('reports/browser.json'),JSON.stringify(report,null,2)+'\n');

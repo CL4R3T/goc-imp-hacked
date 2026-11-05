@@ -2,7 +2,7 @@
 const EXPECTED_BUILD=RULES.SUPPORTED_BUILDS[0];
 const INSTANCE='__GOC_IMPOSSIBLE_PREDICTOR_V1__';
 const HOST_ID='goc-impossible-predictor';
-const SOURCE_NAMES={coin:'Coins',dice:'Dice',card:'Cards',d20:'D20',roulette:'Roulette',lottery:'Lottery',dart:'Darts',rocket:'Rockets',element:'Elements',animal:'Animals',plant:'Plants'};
+const SOURCE_NAMES={coin:'Coins',dice:'Dice',card:'Cards',d20:'D20',roulette:'Roulette',lottery:'Lottery',dart:'Darts',rocket:'Rockets',element:'Elements',animal:'Animals',plant:'Plants',fossil:'Fossil Dig'};
 const GAME_NAMES={coin:'Coin',deal:'The Deal',plinko:'Plinko',slot:'Slots'};
 if(window[INSTANCE]?.destroy) window[INSTANCE].destroy();
 let disposed=false,collapsed=true,allowUnknown=false,follow=true,showClaimed=false;

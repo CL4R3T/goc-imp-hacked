@@ -2,6 +2,8 @@
 
 通过事件 seed 预测 Impossible 结果的油猴面板。
 
+当前适配游戏 **v0.31.0**（`index-BljK5PRK.js`）：支持 Fossil Dig 来源、卡牌加成和转盘，完整收藏为 215 张卡。[规则变化与验证记录](docs/v0.31.0-adaptation.md)。旧游戏构建使用不同卡池，默认触发版本核对提示。
+
 **安装脚本：**如果你已安装Tampermonkey，可以通过[最新发布版](https://github.com/CL4R3T/goc-imp-hacked/releases/latest/download/goc-impossible-predictor.user.js)直接安装。
 
 平时隐藏入口；打开 Impossible 事件时自动展开预测面板，关闭面板后右下角保留 **Imp 预测** 按钮，点击可重新展开。
@@ -38,6 +40,7 @@ npx playwright install chromium
 | `npm test` | 验证规则、预测结果、摘要及转盘最少关闭组合 |
 | `npm run test:browser` | 验证面板交互、状态更新和只读行为 |
 | `npm run check` | 构建并运行全部测试 |
+| `npm run verify:game` | 从 `artifacts/index-BljK5PRK.js` 提取新版规则，对照验证 1,000 个种子；需安装开发依赖 |
 
 CLI 示例：
 

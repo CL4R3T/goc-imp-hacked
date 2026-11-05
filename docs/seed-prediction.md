@@ -83,7 +83,7 @@ cardRng = seededRandom(seed, 51837, 1067064189);
 
 每次真正打开奖励，重新从该随机流开头取值，不会接着小游戏的随机数流往后取。
 
-0～7 级先取 u1：若 u1<0.05，得到该小游戏、该档位的 Shiny；否则取 u2，以 `floor(u2*11)` 选普通卡目标模式。因此同一 seed 在普通等级中：
+0～7 级先取 u1：若 u1<0.05，得到该小游戏、该档位的 Shiny；否则取 u2，以 `floor(u2*12)` 选普通卡目标模式。因此同一 seed 在普通等级中：
 
 - 是否为 deck Shiny 固定，不因多赢几局改变。
 - 普通卡目标模式固定。
@@ -111,7 +111,7 @@ remaining 是已达资格的扇区删除本次选择后的有序数组。游戏�
 
 ```text
 coin, dice, card, d20, roulette, lottery,
-dart, rocket, element, animal, plant
+dart, rocket, element, animal, plant, fossil
 ```
 
 同一 seed 的 u 不因小游戏、最终等级或 Mega 改变；同样的剩余扇区便会得到同一币种。删除扇区会改变数组长度/位置映射，因此结果可能改变。已知 seed 后可以枚举预算内的删除组合，精确计算每种组合落在哪里；是否能选到某个目标仍受候选扇区和 token 预算约束。
@@ -127,7 +127,7 @@ storedSeed = 281474978986060
 rawSeed = 34
 初始等级 = 5
 收藏 = 空
-转盘 = 已解锁，全部 11 个模式已满足资格，不删除扇区
+转盘 = 已解锁，全部 12 个模式已满足资格，不删除扇区
 ```
 
 胜负序列为 `WWWWWWL`：连胜六次，第七次失败。
@@ -139,15 +139,15 @@ rawSeed = 34
 | Plinko | 11 | 857 | 857 |
 | Slots | 11 | 680 | 680 |
 
-在这个空收藏示例里，最终四种游戏都会抽到 `unique:5:global`，即 Stackjelly。如果改为六张 Unique 全持有、最高档 deck Shiny 未收齐，则同一个 seed、同一个 11 级会回退到 10 张卡的池，得到重复的 Chromavyrm，并发四个 token。
+在 v0.31.0 的空收藏示例里，最终四种游戏都会抽到 `unique:6:global`，即 Aurelisk。如果只持有更新前的六张 Unique，≥10 级仍使用七张 Unique 池，同一个 seed 仍抽到新的 Aurelisk。若七张 Unique 全持有、最高档 deck Shiny 未收齐，则回退到 11 张卡的池，得到重复的 Stackjelly，并发三个 token。
 
 转盘 u 为 `0.47672108514234424`：
 
 | 删除组合 | 对应币种 | token 成本 |
 | --- | --- | --- |
 | 不删除 | lottery | 0 |
-| 删除 coin、dice | dart | 2 |
-| 删除 lottery | roulette | 1 |
+| 删除 coin | dart | 1 |
+| 删除 lottery、dart | roulette | 2 |
 
 后两行是满足 token 预算时的条件结果；示例配置 token=0 且卡牌为新卡，不能直接执行需花 token 的组合。
 

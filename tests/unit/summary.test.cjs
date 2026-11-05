@@ -12,19 +12,19 @@ assert.ok(result.branches.every(b=>s.summarizeBranch(b).newCard.operation==='现
 // Each card appears once, with the best payout among stops that actually draw it.
 for(const [index,branch] of result.branches.entries()){
   const summary=s.summarizeBranch(branch).newCard;
-  assert.deepEqual(summary.cards.map(c=>c.id),[branch.game+':3:dart','unique:2:global','unique:5:global']);
-  assert.deepEqual(summary.cards.map(c=>c.maxMegas),[[170,260,860],[172,263,870],[170,256,857],[246,90,680]][index]);
+  assert.deepEqual(summary.cards.map(c=>c.id),[branch.game+':3:dart','unique:3:global','unique:5:global','unique:6:global']);
+  assert.deepEqual(summary.cards.map(c=>c.maxMegas),[[170,260,380,860],[172,263,388,870],[170,256,372,857],[246,90,300,680]][index]);
   assert.deepEqual(summary.cards.map(c=>c.operation),[
-    '再玩 2 轮后结算（Lvl 7）','再玩 3 轮后结算（Lvl 8）','再玩 6 轮后结算（Lvl 11）',
+    '再玩 2 轮后结算（Lvl 7）','再玩 3 轮后结算（Lvl 8）','再玩 4 轮后结算（Lvl 9）','再玩 6 轮后结算（Lvl 11）',
   ]);
   assert.equal(summary.cards[0].source,'dart');
   assert.equal(summary.cards[0].percent,[2,1,3,5][index]);
   assert.equal(summary.cards[1].source,'global');
   assert.equal(summary.cards[1].percent,1);
 }
-const withoutTopCard=p.predict({...example,heldCards:{'unique:5:global':1}});
-assert.deepEqual(withoutTopCard.branches.map(b=>s.summarizeBranch(b).newCard.maxMegas),[260,263,256,246]);
-assert.ok(withoutTopCard.branches.every(b=>s.summarizeBranch(b).newCard.cards.length===2));
+const withoutTopCard=p.predict({...example,heldCards:{'unique:6:global':1}});
+assert.deepEqual(withoutTopCard.branches.map(b=>s.summarizeBranch(b).newCard.maxMegas),[380,388,372,300]);
+assert.ok(withoutTopCard.branches.every(b=>s.summarizeBranch(b).newCard.cards.length===3));
 const allOwned=Object.fromEntries(allCards.map(c=>[c.id,1]));
 assert.ok(p.predict({...example,heldCards:allOwned}).branches.every(b=>s.summarizeBranch(b).newCard.status==='none'));
 const heldInitial=Object.fromEntries(result.branches.map(b=>[b.stopOptions[0].card.id,1]));
