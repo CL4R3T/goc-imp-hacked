@@ -1,8 +1,8 @@
 // Impossible prediction rules.
 "use strict";
 
-// Verified against the downloaded bundles through 2026-11-03; prediction rules match.
-const SUPPORTED_BUILDS = Object.freeze(['index-7yX3ACUS.js', 'index-BYtwn7Gy.js', 'index-kVDE62Ka.js']);
+// Verified against v0.31.0. Earlier builds use different card pools and wheel sources.
+const SUPPORTED_BUILDS = Object.freeze(['index-BljK5PRK.js']);
 
 const b1 = {
   "coin": {
@@ -37,9 +37,12 @@ const b1 = {
   },
   "plant": {
     "name": "Plant Kingdom"
+  },
+  "fossil": {
+    "name": "Fossil Dig"
   }
 };
-const iH = Object.freeze(["coin", "dice", "card", "d20", "roulette", "lottery", "dart", "rocket", "element", "animal", "plant"]);
+const iH = Object.freeze(["coin", "dice", "card", "d20", "roulette", "lottery", "dart", "rocket", "element", "animal", "plant", "fossil"]);
 const fQ = {
   deal: .5,
   reveal: .75,
@@ -414,7 +417,8 @@ const ORDINARY_CARD_PERCENTS = {
   "rocket": [2, 3, 2, 1, 1, 3, 1, 5, 1, 1, 1, 2, 1, 1, 4, 1],
   "element": [2, 1, 1, 1, 1, 2, 4, 2, 1, 1, 1, 3, 1, 1, 5, 3],
   "animal": [1, 3, 1, 5, 1, 1, 4, 1, 1, 1, 2, 2, 3, 1, 1, 2],
-  "plant": [1, 1, 2, 3, 1, 2, 1, 3, 1, 1, 2, 4, 1, 1, 1, 5]
+  "plant": [1, 1, 2, 3, 1, 2, 1, 3, 1, 1, 2, 4, 1, 1, 1, 5],
+  "fossil": [1, 1, 1, 3, 1, 2, 1, 3, 2, 1, 1, 4, 1, 1, 2, 5]
 };
 const gs = Object.keys(ORDINARY_CARD_PERCENTS);
 const z8 = [0, 2, 3, 5];
@@ -443,7 +447,7 @@ const DECK_SHINIES = [{
   target: "coin",
   percent: 10
 }, {
-  art: "Ouroterra",
+  art: "Chestlord",
   target: null,
   percent: 1
 }, {
@@ -487,9 +491,9 @@ const DECK_SHINIES = [{
   target: "plant",
   percent: 10
 }, {
-  art: "Chestlord",
-  target: null,
-  percent: 1
+  art: "Tusk Titan",
+  target: "fossil",
+  percent: 10
 }, {
   art: "Cloverlynx",
   target: "animal",
@@ -532,6 +536,10 @@ const UNIQUE_SHINIES = [{
   fromLevel: 10
 }, {
   art: "Stackjelly",
+  percent: 1,
+  fromLevel: null
+}, {
+  art: "Aurelisk",
   percent: 1,
   fromLevel: null
 }];

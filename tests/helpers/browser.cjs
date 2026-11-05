@@ -32,4 +32,4 @@ function browserLaunchOptions(chromium){
   if(!executablePath)throw new Error('No browser found. Run npx playwright install chromium, or set BROWSER_EXECUTABLE_PATH.');
   return {headless:true,executablePath};
 }
-module.exports={loadPlaywright,browserLaunchOptions,rootPath,outputPath};
+module.exports={playwrightDirectory,loadPlaywright,browserLaunchOptions,rootPath,outputPath};
