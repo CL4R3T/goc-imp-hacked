@@ -7,13 +7,13 @@ const {playwrightDirectory,rootPath,outputPath} = require('../tests/helpers/brow
 const babel = require(path.join(playwrightDirectory(),'lib/transform/babelBundle.js'));
 const old = require('../src/rules/impossible-rules.cjs');
 // Extract only the audited rule dependency graph; never execute the whole game bundle.
-// Binding names are specific to v0.31.0 and must be reviewed for a different build.
-const input = path.resolve(process.argv[2] || rootPath('artifacts/index-BljK5PRK.js'));
+// Binding names are specific to the audited builds below; review other builds first.
+const input = path.resolve(process.argv[2] || rootPath('artifacts/index-C0JM9mVX.js'));
 const source = fs.readFileSync(input,'utf8');
 const ast = babel.babelParse(source, input, true);
 let bindings;
 babel.traverse(ast, {Program(p) { bindings = p.scope.bindings; p.stop(); }});
-const names = {
+const namesV0310 = {
   IMPOSSIBLE_THRESHOLD_PERCENT:'pv', MINIGAMES:'O9', WHEEL_SOURCES:'a6',
   accumulatedBonus:'D9', applyBonus:'lb', cardById:'Ad', cardRandom:'voe',
   chooseWheelSegment:'Oie', countRightSteps:'Lie', createChain:'Zoe', dealBonus:'Jie',
@@ -26,6 +26,22 @@ const names = {
   totalMegas:'o6', wheelEligibility:'p_', wheelRandom:'Soe',
   allCards:'A8', cardSpeed:'K$', maxCardSpeed:'i8e'
 };
+const namesV0311 = {
+  IMPOSSIBLE_THRESHOLD_PERCENT:'xv', MINIGAMES:'K9', WHEEL_SOURCES:'o6',
+  accumulatedBonus:'H9', applyBonus:'mb', cardById:'Fd', cardRandom:'Aoe',
+  chooseWheelSegment:'Uie', countRightSteps:'zie', createChain:'are', dealBonus:'eoe',
+  dealForFace:'Zie', drawCard:'C8e', drawCardId:'x8e', duplicateTokens:'V$',
+  encodeSeed:'s8', filterWheelSegments:'sD', isEncodedSeed:'Cd', isImpossibleProbability:'m2',
+  isMinigameUnlocked:'$oe', isWheelUnlocked:'zoe', minigameRandom:'joe', outcomeRandom:'Noe',
+  payoutSource:'Sv', plinkoPathForFace:'Oie', readEventSeed:'Ku', redMinusBlack:'Vie',
+  refreshBoard:'Goe', resolveCall:'nre', shinyPoolAtTier:'tF', shinyTier:'wD',
+  slotBonus:'moe', slotEffect:'uoe', slotGridForWin:'doe', startOrResumeEvent:'sre',
+  totalMegas:'u6', wheelEligibility:'y_', wheelRandom:'Moe',
+  allCards:'M8', cardSpeed:'J$', maxCardSpeed:'c8e'
+};
+const auditedBuilds = {'index-BljK5PRK.js':namesV0310,'index-C0JM9mVX.js':namesV0311};
+const names = auditedBuilds[path.basename(input)];
+if(!names) throw Error('Unaudited build: review its rule bindings before verification.');
 const selected = new Set();
 function include(name) {
   if(selected.has(name)) return;
@@ -113,5 +129,5 @@ for(const event of [{id:'legacy'}, {seed:123}, {seed:123,seedVersion:1}, {seed:o
 const result={build:path.basename(input),sha256:createHash('sha256').update(source).digest('hex'),baseline:'src/rules/impossible-rules.cjs (v0.31.0 adaptation)',
   extractedBindings:selected.size,comparisons,rawSeeds:1000,replayedTurns:turns,cardCount:latest.allCards.length,
   maximumCardSpeed:latest.maxCardSpeed,cardCollections:collections.length,status:'PASS'};
-fs.writeFileSync(outputPath('reports/v031-build-comparison.json'),JSON.stringify(result,null,2)+'\n');
+fs.writeFileSync(outputPath('reports/'+(names===namesV0311?'v0311':'v031')+'-build-comparison.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
