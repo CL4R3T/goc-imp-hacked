@@ -149,8 +149,8 @@ async function attach(page,initial){
     assert.equal(await panel.locator('[data-game]').count(),1);
     assert.match(await panel.locator('[data-game="deal"]').innerText(),/870.*再玩 5 轮后结算/s);
     assert.match(await panel.locator('.outcome').innerText(),/第 7 轮失败/);
-    // v0.31.0 runs directly; older card pools must not silently use the new rules.
-    for(const build of ['index-BljK5PRK.js']){
+    // v0.31.0 and v0.31.1 run directly; older card pools must not silently use the new rules.
+    for(const build of ['index-BljK5PRK.js','index-C0JM9mVX.js']){
       await page.evaluate(build=>{document.scripts[0].src='/assets/'+build;window.__GOC_IMPOSSIBLE_PREDICTOR_V1__.refresh();},build);
       assert.equal(await panel.locator('[data-game]').count(),1);
       assert.equal(await panel.locator('[data-control="allow"]').count(),0);
@@ -250,7 +250,7 @@ async function attach(page,initial){
         'automatic active-event and preview opening','dismissal survives polling',
         'automatic collapse on active-event and preview exit','manual reopening after event exit',
         'dragged panel position restored and closed launcher anchored bottom-right','current-event following',
-        'React progress updates','v0.31.0 runs without override','old and unknown build version gate','12 wheel sources including Fossil Dig','unknown inputs','HTML escaping',
+        'React progress updates','v0.31.0 and v0.31.1 run without override','old and unknown build version gate','12 wheel sources including Fossil Dig','unknown inputs','HTML escaping',
         'readonly IndexedDB and no creation of missing database','mobile width'],
       gameActions:0,gameStorageWrites:0,userscriptNetworkRequests:0,pageErrors:errors};
     fs.writeFileSync(outputPath('reports/browser.json'),JSON.stringify(report,null,2)+'\n');
