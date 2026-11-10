@@ -1,8 +1,8 @@
 // Impossible prediction rules.
 "use strict";
 
-// Verified against v0.31.0 and v0.31.1. Earlier builds use different card pools and wheel sources.
-const SUPPORTED_BUILDS = Object.freeze(['index-C0JM9mVX.js', 'index-BljK5PRK.js']);
+// Verified against v0.31.0 through v0.31.2. Earlier builds use different card pools and wheel sources.
+const SUPPORTED_BUILDS = Object.freeze(['index-D3Hxht5Z.js', 'index-C0JM9mVX.js', 'index-BljK5PRK.js']);
 
 const b1 = {
   "coin": {

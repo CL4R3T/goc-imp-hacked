@@ -8,11 +8,7 @@ const babel = require(path.join(playwrightDirectory(),'lib/transform/babelBundle
 const old = require('../src/rules/impossible-rules.cjs');
 // Extract only the audited rule dependency graph; never execute the whole game bundle.
 // Binding names are specific to the audited builds below; review other builds first.
-const input = path.resolve(process.argv[2] || rootPath('artifacts/index-C0JM9mVX.js'));
-const source = fs.readFileSync(input,'utf8');
-const ast = babel.babelParse(source, input, true);
-let bindings;
-babel.traverse(ast, {Program(p) { bindings = p.scope.bindings; p.stop(); }});
+const input = path.resolve(process.argv[2] || rootPath('artifacts/index-D3Hxht5Z.js'));
 const namesV0310 = {
   IMPOSSIBLE_THRESHOLD_PERCENT:'pv', MINIGAMES:'O9', WHEEL_SOURCES:'a6',
   accumulatedBonus:'D9', applyBonus:'lb', cardById:'Ad', cardRandom:'voe',
@@ -39,9 +35,31 @@ const namesV0311 = {
   totalMegas:'u6', wheelEligibility:'y_', wheelRandom:'Moe',
   allCards:'M8', cardSpeed:'J$', maxCardSpeed:'c8e'
 };
-const auditedBuilds = {'index-BljK5PRK.js':namesV0310,'index-C0JM9mVX.js':namesV0311};
-const names = auditedBuilds[path.basename(input)];
-if(!names) throw Error('Unaudited build: review its rule bindings before verification.');
+const namesV0312 = {
+  IMPOSSIBLE_THRESHOLD_PERCENT:'wv', MINIGAMES:'K9', WHEEL_SOURCES:'a6',
+  accumulatedBonus:'H9', applyBonus:'mb', cardById:'Ad', cardRandom:'Doe',
+  chooseWheelSegment:'eoe', countRightSteps:'Zie', createChain:'pre', dealBonus:'doe',
+  dealForFace:'coe', drawCard:'R8e', drawCardId:'E8e', duplicateTokens:'Q$',
+  encodeSeed:'a8', filterWheelSegments:'rD', isEncodedSeed:'bd', isImpossibleProbability:'m2',
+  isMinigameUnlocked:'Xoe', isWheelUnlocked:'Zoe', minigameRandom:'Loe', outcomeRandom:'Boe',
+  payoutSource:'Nv', plinkoPathForFace:'Jie', readEventSeed:'zu', redMinusBlack:'ooe',
+  refreshBoard:'Qoe', resolveCall:'gre', shinyPoolAtTier:'tF', shinyTier:'SD',
+  slotBonus:'voe', slotEffect:'koe', slotGridForWin:'Coe', startOrResumeEvent:'hre',
+  totalMegas:'o6', wheelEligibility:'w_', wheelRandom:'Ooe',
+  allCards:'A8', cardSpeed:'ez', maxCardSpeed:'w8e'
+};
+const auditedBuilds = new Map([
+  ['index-BljK5PRK.js', {names:namesV0310, report:'v031-build-comparison.json'}],
+  ['index-C0JM9mVX.js', {names:namesV0311, report:'v0311-build-comparison.json'}],
+  ['index-D3Hxht5Z.js', {names:namesV0312, report:'v0312-build-comparison.json'}]
+]);
+const build = auditedBuilds.get(path.basename(input));
+if(!build) throw Error('Unaudited build: review its rule bindings before verification.');
+const {names,report} = build;
+const source = fs.readFileSync(input,'utf8');
+const ast = babel.babelParse(source, input, true);
+let bindings;
+babel.traverse(ast, {Program(p) { bindings = p.scope.bindings; p.stop(); }});
 const selected = new Set();
 function include(name) {
   if(selected.has(name)) return;
@@ -129,5 +147,5 @@ for(const event of [{id:'legacy'}, {seed:123}, {seed:123,seedVersion:1}, {seed:o
 const result={build:path.basename(input),sha256:createHash('sha256').update(source).digest('hex'),baseline:'src/rules/impossible-rules.cjs (v0.31.0 adaptation)',
   extractedBindings:selected.size,comparisons,rawSeeds:1000,replayedTurns:turns,cardCount:latest.allCards.length,
   maximumCardSpeed:latest.maxCardSpeed,cardCollections:collections.length,status:'PASS'};
-fs.writeFileSync(outputPath('reports/'+(names===namesV0311?'v0311':'v031')+'-build-comparison.json'),JSON.stringify(result,null,2)+'\n');
+fs.writeFileSync(outputPath('reports/'+report),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
